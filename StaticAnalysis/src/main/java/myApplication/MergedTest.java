@@ -4,14 +4,9 @@ import gen.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import mysqlUtils.MysqlUtil;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
 import otherUtils.SqlParseCheck;
 import otherUtils.stringUtil;
 import webAPI.ReturnMessageEntity;
-import webAPI.StaticCheckImp;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,8 +16,7 @@ public class MergedTest {
         try {
             System.out.println("-HiveQL:"+s);
             System.out.println("-Suggestion:");
-            s = s.replace(";", "");
-            s = s.replace("\n", " ");
+            s = stringUtil.proProcessing(s);
             if(!SqlParseCheck.sqlParseCheck(s)){
                 ReturnMessageEntity returnMessageEntity = new ReturnMessageEntity();
                 System.out.println("This HiveQL may be illegal, please check your input or the database connection.");

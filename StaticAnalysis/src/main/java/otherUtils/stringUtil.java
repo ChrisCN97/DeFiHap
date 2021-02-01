@@ -6,8 +6,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class stringUtil {
+    public static String proProcessing(String s){
+        return s.replace(";", "").replace("\n", " ");
+    }
+    
     public static String join2innerJoin(String sql) throws Exception {
-        StringBuffer convertedSql = new StringBuffer(sql);
+        StringBuilder convertedSql = new StringBuilder(sql);
         String sql2lower = sql.toLowerCase();
         String[] tokens = sql2lower.split("[ (),;]+");
         //第几个join
