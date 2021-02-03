@@ -44,34 +44,12 @@ public class MergedTest {
             //第一个参数是自己写的解析器
 //        walker.walk(new MergedListener(),tree);
 
-            //记录已做修复的AP，只有检测到这些警告，才会生成修复语句
-            String[] alreadyFixedPatternsAsList = {"Please put the table containing less records on the left side of join. Or check database connection.",
-                    "Be careful! Using \"having\" will cause poor performance! Please use \"where\".",
-                    "Be careful! Using \"interval\" in \"date_sub()\" will cause error!",
-                    "Be careful! Using \"select *\" will cause poor performance! Please select specific column.",
-                    "Warning! Column selected should be concluded in group by",
-                    "Warning! Please utilize partition in the query. Or check database connection."
-            };
-            List<String> alreadyFixedPatterns = Arrays.asList(alreadyFixedPatternsAsList);
+
 
             TestFixListener testFixListener = new TestFixListener();
             walker.walk(testFixListener, tree);
             ReturnMessageEntity returnMessageEntity = testFixListener.returnMessageEntity;
-            List<String> suggestionList = new ArrayList<>();
-            //判断是否检测到了已做修复的AP
-            int flag = 0;
-            //去重
-            for (int i = 0; i < returnMessageEntity.getFixedSuggestions().size(); i++) {
-                if (alreadyFixedPatterns.contains(returnMessageEntity.getFixedSuggestions().get(i))) {
-                    flag = 1;
-                }
-                if (!suggestionList.contains(returnMessageEntity.getFixedSuggestions().get(i))) {
-                    suggestionList.add(returnMessageEntity.getFixedSuggestions().get(i));
-                }
-            }
-            if (flag == 0) {
-                returnMessageEntity.setFixedHiveql(null);
-            }
+
             return returnMessageEntity;
         }
         catch(Exception e){
