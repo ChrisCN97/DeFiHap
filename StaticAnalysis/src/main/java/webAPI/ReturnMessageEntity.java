@@ -6,29 +6,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReturnMessageEntity {
-    @JSONField(name="fixedHiveql")
+    @JSONField(name = "fixedHiveql")
     public String fixedHiveql;
-    @JSONField(name="fixedSuggestions")
-    public List<String>fixedSuggestions;
-    @JSONField(name="joinParams")
+    @JSONField(name = "fixedSuggestions")
+    public List<String> fixedSuggestions;
+    @JSONField(name = "joinParams")
     //参数顺序：t1_name,t1_joinkey,t2_name,t2_joinkey
-    public List<String>joinParams;
+    public List<String> joinParams;
 
-    public ReturnMessageEntity(String fixedHiveql,List<String>fixedSuggestions,List<String>joinParams){
+    @JSONField(name = "configSuggestions")
+    public List<String> configSuggestions;
+
+    public ReturnMessageEntity(String fixedHiveql, List<String> fixedSuggestions, List<String> joinParams) {
         super();
-        this.fixedHiveql=fixedHiveql;
-        this.fixedSuggestions=fixedSuggestions;
-        this.joinParams=joinParams;
+        this.fixedHiveql = fixedHiveql;
+        this.fixedSuggestions = fixedSuggestions;
+        this.joinParams = joinParams;
+        this.configSuggestions = new ArrayList<>();
     }
-    public ReturnMessageEntity(){
+
+    public ReturnMessageEntity() {
         super();
-        this.fixedHiveql="";
-        this.fixedSuggestions=new ArrayList<>();
-        this.joinParams=null;
+        this.fixedHiveql = "";
+        this.fixedSuggestions = new ArrayList<>();
+        this.configSuggestions = new ArrayList<>();
+        this.joinParams = null;
     }
-    public void addSuggestion(String suggestion){
+
+    public void addSuggestion(String suggestion) {
         this.fixedSuggestions.add(suggestion);
     }
+
     public String getFixedHiveql() {
         return fixedHiveql;
     }
@@ -52,4 +60,13 @@ public class ReturnMessageEntity {
     public void setJoinParams(List<String> joinPrams) {
         this.joinParams = joinPrams;
     }
+
+    public List<String> getConfigSuggestions() {
+        return configSuggestions;
+    }
+
+    public void setConfigSuggestions(List<String> configSuggestions) {
+        this.configSuggestions = configSuggestions;
+    }
+
 }

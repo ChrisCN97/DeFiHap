@@ -35,7 +35,7 @@ public class staticCheckController {
     @RequestMapping(value="/configCheck",method = RequestMethod.GET)
     public String configCheck(){
 
-        MergedTest.configCheck();
-        return "config_check";
+        return JSON.toJSONString(MergedTest.configCheck());
+
     }
 }

@@ -58,8 +58,8 @@ public class MergedTest {
         }
     }
 
-    public static void configCheck(){
-        MysqlUtil.configurationCheck();
+    public static List<String> configCheck(){
+        return MysqlUtil.configurationCheck();
     }
 
     public static void main(String[] args) throws Exception {
