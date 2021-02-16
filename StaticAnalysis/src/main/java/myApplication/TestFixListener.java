@@ -56,7 +56,7 @@ public class TestFixListener extends HplsqlBaseListener {
         String res = regexCheck(testST.render());
         //完全正确的情况添加提醒
         if(returnMessageEntity.getFixedSuggestions().size() == 0){
-            returnMessageEntity.addSuggestion("Correct HQL.");
+            returnMessageEntity.addSuggestion(apDB.getSug("Correct HQL"));
         }
 
         if(!apDB.isAllFixed()){

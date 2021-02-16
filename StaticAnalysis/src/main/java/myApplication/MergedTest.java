@@ -7,8 +7,7 @@ import mysqlUtils.MysqlUtil;
 import otherUtils.SqlParseCheck;
 import otherUtils.stringUtil;
 import webAPI.ReturnMessageEntity;
-import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 
 public class MergedTest {
@@ -44,16 +43,13 @@ public class MergedTest {
             //第一个参数是自己写的解析器
 //        walker.walk(new MergedListener(),tree);
 
-
-
             TestFixListener testFixListener = new TestFixListener();
             walker.walk(testFixListener, tree);
-            ReturnMessageEntity returnMessageEntity = testFixListener.returnMessageEntity;
-
-            return returnMessageEntity;
+            testFixListener.returnMessageEntity.deduplicate();
+            return testFixListener.returnMessageEntity;
         }
         catch(Exception e){
-            System.out.println("There is something wrong with the HQL");
+            e.printStackTrace();
             return null;
         }
     }

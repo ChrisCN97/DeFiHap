@@ -3,7 +3,9 @@ package webAPI;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ReturnMessageEntity {
     @JSONField(name = "fixedHiveql")
@@ -27,7 +29,7 @@ public class ReturnMessageEntity {
 
     public ReturnMessageEntity() {
         super();
-        this.fixedHiveql = "";
+        this.fixedHiveql =null;
         this.fixedSuggestions = new ArrayList<>();
         this.configSuggestions = new ArrayList<>();
         this.joinParams = null;
@@ -69,4 +71,9 @@ public class ReturnMessageEntity {
         this.configSuggestions = configSuggestions;
     }
 
+    public void deduplicate(){
+        Set<String> t = new HashSet<>(fixedSuggestions);
+        fixedSuggestions.clear();
+        fixedSuggestions.addAll(t);
+    }
 }

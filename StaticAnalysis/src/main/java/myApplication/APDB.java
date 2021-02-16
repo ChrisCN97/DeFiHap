@@ -27,6 +27,7 @@ public class APDB {
             put("Use partition", "Warning! Please utilize partition in the query. Or check database connection.");
             // illegal input 要在 MergedTest.java 中单独替换
             put("Illegal input", "This HiveQL may be illegal, please check your input or the database connection.");
+            put("Correct HQL", "Correct HQL.");
         }};
 
         //记录已做修复的AP，只有检测到这些警告，才会生成修复语句
@@ -62,6 +63,6 @@ public class APDB {
 
     //判断是否全是已做修复的AP
     public Boolean isAllFixed(){
-        return apFixed.containsAll(apTryFixed);
+        return apTryFixed.size()>0 && apFixed.containsAll(apTryFixed);
     }
 }

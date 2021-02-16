@@ -32,10 +32,9 @@ public class staticCheckController {
 //        MergedTest.astCheck(hiveql);
         return "hiveql格式错误";
     }
+
     @RequestMapping(value="/configCheck",method = RequestMethod.GET)
     public String configCheck(){
-
         return JSON.toJSONString(MergedTest.configCheck());
-
     }
 }
