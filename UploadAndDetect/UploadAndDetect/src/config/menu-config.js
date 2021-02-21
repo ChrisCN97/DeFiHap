@@ -5,6 +5,9 @@ module.exports = [{
     sub: [{
         name: 'Detect and Fix',
         componentName: 'detect'
+    },{
+      name: 'Configuration Check',
+      componentName: 'configCheck'
     }]
 },{
     name: 'Configuration',
