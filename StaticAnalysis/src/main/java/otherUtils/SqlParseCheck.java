@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.Properties;
 
 /*
-* 检测Sql是否符合基本的语法规则
+* Check whether Sql meets basic grammatical rules
 * */
 public class SqlParseCheck {
     public static boolean sqlParseCheck(String sql){
@@ -32,15 +32,15 @@ public class SqlParseCheck {
         {
             ps.execute("explain " + sql);
         } catch (HiveSQLException e){
-            // HiveQL无法解析报ParseException，ErrorCode是40000
-            // 还可能报语义错误
+            // HiveQL fails to parse and reports ParseException, ErrorCode is 40000
+            // Semantic errors may also be reported
 //            e.printStackTrace();
             if(e.getErrorCode() == 40000){
-                // 还有可能因为安全原因拒绝检查
+                // It may also be rejected for security reasons
                 return e.toString().contains("SemanticException Cartesian products are disabled for safety reasons.");
             }
         } catch (SQLException e){
-            // 还可能有网络连接问题
+            // There may also be network connection issues
             return false;
         }
         return true;

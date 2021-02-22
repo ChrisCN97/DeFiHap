@@ -28,8 +28,9 @@ public class TestFixListener extends HplsqlBaseListener {
 
     private STGroup group = new STGroupFile("src/main/java/test.stg");
     private ST testST = group.getInstanceOf("select_stmt");
-    private List<SelectStmt> selectStmtList = new ArrayList<>(); //考虑到可能存在subselect语句，因此用列表存储所有出现的select_stmt
-    private SelectStmt selectStmt = new SelectStmt();  //HQL修复，重新生成Select语句
+    // Considering that there may be subselect statements, a list is used to store all occurrences of select_stmt
+    private List<SelectStmt> selectStmtList = new ArrayList<>();
+    private SelectStmt selectStmt = new SelectStmt();  // HQL repair, regenerate Select statement
     public ReturnMessageEntity returnMessageEntity = new ReturnMessageEntity();
 
     public APDB apDB = new APDB();
@@ -40,10 +41,10 @@ public class TestFixListener extends HplsqlBaseListener {
         selectStmtList.add(selectStmt);
     }
 
-    //anti-pattern:不要过多使用join
+    //anti-pattern: Don't use too many JOIN
     @Override
     public void exitProgram(HplsqlParser.ProgramContext ctx){
-        //判断join个数是否超过一个
+        //Determine whether the number of joins exceeds one
 //        System.out.println("There is "+joinNum+" join");
         if(joinNum > 1){
             returnMessageEntity.addSuggestion(apDB.getSug("Too many join"));
@@ -51,10 +52,10 @@ public class TestFixListener extends HplsqlBaseListener {
         }
         joinNum = 0;
 
-        //TODO:测试修复
+        // Test fix
         testST.add("stmt",selectStmt);
         String res = regexCheck(testST.render());
-        //完全正确的情况添加提醒
+        // Add a reminder when it is completely correct
         if(returnMessageEntity.getFixedSuggestions().size() == 0){
             returnMessageEntity.addSuggestion(apDB.getSug("Correct HQL"));
         }
@@ -72,7 +73,7 @@ public class TestFixListener extends HplsqlBaseListener {
         return s;
     }
 
-    // 在date_sub()中使用interval
+    // Use interval in date_sub()
     public String dateSubIntervalCheck(String s){
         s = s.toLowerCase();
         String pattern = "(date_\\S+?\\s*\\(.+?,\\s*)(interval\\s*'*(\\d*)'*\\s*day(s)?)\\)";
@@ -90,21 +91,21 @@ public class TestFixListener extends HplsqlBaseListener {
         return s;
     }
 
-    //anti-pattern:select的列未在group by中
+    //anti-pattern: The selected column is not in the group by
     @Override
     public void enterSelect_stmt(HplsqlParser.Select_stmtContext ctx){
         currentSelectListNum.add(0);
     }
 
-    //anti-pattern:select的列未在group by中
+    //anti-pattern: The selected column is not in the group by
     @Override
     public void exitSelect_stmt(HplsqlParser.Select_stmtContext ctx){
         if(groupByFlag.size() > 0){
-            //if(selectItemList.size() != 0){
+            // if(selectItemList.size() != 0){
             if(currentSelectListNum.get(currentSelectListNum.size()-1) != 0){
                 returnMessageEntity.addSuggestion(apDB.getSug("Col in group"));
             }
-            //TODO:修复语句添加group by 条件
+            // Repair statement to add group by condition
             for(String s:selectItemList){
                 selectStmt.addGroupByCondition(s);
             }
@@ -120,10 +121,10 @@ public class TestFixListener extends HplsqlBaseListener {
         }
     }
 
-    //anti-pattern: select的列未在group by中
+    //anti-pattern: The selected column is not in the group by
     @Override
     public void enterSelect_list_item(HplsqlParser.Select_list_itemContext ctx) {
-        //对于每个select item,将其添加进selectItemList
+        // For each select item, add it to selectItemList
         if(ctx.expr() == null){
             return;
         }
@@ -131,7 +132,7 @@ public class TestFixListener extends HplsqlBaseListener {
             selectItemList.add(ctx.expr().getText());
             currentSelectListNum.set(currentSelectListNum.size()-1,currentSelectListNum.get(currentSelectListNum.size()-1) + 1);
         }
-        //TODO:为了修复，构造select item
+        // In order to repair, construct select item
         String alias = null;
         if(ctx.select_list_alias() != null){
             alias = ctx.select_list_alias().ident().getText();
@@ -139,18 +140,20 @@ public class TestFixListener extends HplsqlBaseListener {
         selectStmt.addColumn(ctx.expr().getText(), alias);
     }
 
-    //anti-pattern:条件允许时，没有将条目少的表放在join左侧，条目多的表放在join右侧
+    // anti-pattern:
+    // When conditions permit, the table with few entries is not placed on the left side of join,
+    // or the table with many entries is placed on the right side
     @Override
     public void enterFrom_clause(HplsqlParser.From_clauseContext ctx) {
-//        //重置join个数
+        // Reset the number of joins
 //        joinNum = 0;
         String tableName1 = "";
         String tableName2 = "";
         String alias1 = "";
         String alias2 = "";
-        //有join操作
+        // Join operation
         if(ctx.from_join_clause().size() != 0) {
-            //两张表都是普通的表
+            // Both tables are ordinary tables
             if(ctx.from_table_clause().from_table_name_clause() != null && ctx.from_join_clause(0).from_table_clause().from_table_name_clause() != null){
                 tableName1 = ctx.from_table_clause().from_table_name_clause().table_name().getText();
                 if(ctx.from_table_clause().from_table_name_clause().from_alias_clause() != null){
@@ -160,7 +163,7 @@ public class TestFixListener extends HplsqlBaseListener {
                 }
                 aliasTableName.put(alias1,tableName1);
 
-                //TODO:修复过程构建table token
+                // Repair process to build table token
                 FromJoinTable tempTable1 = new FromJoinTable();
                 tempTable1.setNameAlias(new String[]{tableName1,alias1});
                 selectStmt.addTable(tempTable1);
@@ -174,7 +177,7 @@ public class TestFixListener extends HplsqlBaseListener {
                 tempTable2.setNameAlias(new String[]{tableName2,alias2});
                 aliasTableName.put(alias2,tableName2);
 
-                //TODO:修复过程构建table token
+                // Repair process to build table token
                 tempTable2.setJoinType(ctx.from_join_clause(0).from_join_type_clause().getText());
                 tempTable2.setOnCondition(getAllBoolExpr(ctx.from_join_clause(0).bool_expr()));
 //                selectStmt.addTable(tempTable2);
@@ -188,7 +191,7 @@ public class TestFixListener extends HplsqlBaseListener {
                 };
 
             }
-            //有subselect的情况
+            // In case of subselect
             else if(ctx.from_table_clause().from_table_name_clause() != null){
                 tableName1 = ctx.from_table_clause().from_table_name_clause().table_name().getText();
                 if(ctx.from_table_clause().from_table_name_clause().from_alias_clause() != null){
@@ -203,7 +206,7 @@ public class TestFixListener extends HplsqlBaseListener {
                 selectStmt.addTable(tempTable1);
             }
         }
-        //仅存在一张表
+        // Only one table exists
         else if(ctx.from_table_clause().from_table_name_clause() != null){
             tableName1 = ctx.from_table_clause().from_table_name_clause().table_name().getText();
             if(ctx.from_table_clause().from_table_name_clause().from_alias_clause() != null){
@@ -214,7 +217,7 @@ public class TestFixListener extends HplsqlBaseListener {
             }
             aliasTableName.put(alias1,tableName1);
 
-            //TODO:修复过程构建table token
+            // Repair process to build table token
             FromJoinTable tempTable1 = new FromJoinTable();
             tempTable1.setNameAlias(new String[]{tableName1,alias1});
             selectStmt.addTable(tempTable1);
@@ -241,7 +244,7 @@ public class TestFixListener extends HplsqlBaseListener {
 
     @Override
     public void exitFrom_clause(HplsqlParser.From_clauseContext ctx) {
-//        //判断join个数是否超过一个
+//        // Determine whether the number of joins exceeds one
 //        System.out.println("There is "+joinNum+" join");
 //        if(joinNum > 1){
 //            System.out.println("不要过多使用join");
@@ -249,17 +252,17 @@ public class TestFixListener extends HplsqlBaseListener {
 //        joinNum = 0;
     }
 
-    //anti-pattern:过多使用join
-    //anti-pattern:不要在join子句中进行运算
-    //anti-pattern:将不同数据类型的字段进行join
+    //anti-pattern: Excessive use of join
+    //anti-pattern: Do not perform operations in the join clause
+    //anti-pattern: Join fields of different data types
     Boolean hasJoin = false;
     @Override
     public void enterFrom_join_clause(HplsqlParser.From_join_clauseContext ctx) {
         hasJoin = true;
-        //累加join个数
+        // Accumulate the number of joins
         joinNum = joinNum + 1;
 
-        //TODO:修复构造from_join_clause
+        // Fix the structure from_join_clause
         if(ctx.from_table_clause().from_table_name_clause() != null) {
             String tableName = ctx.from_table_clause().from_table_name_clause().table_name().getText();
             String tableAlias;
@@ -274,7 +277,7 @@ public class TestFixListener extends HplsqlBaseListener {
             tempTable.setOnCondition(getAllBoolExpr(ctx.bool_expr()));
             selectStmt.addTable(tempTable);
 
-            //TODO:修复两表顺序
+            // Fix the order of the two tables
             if(selectStmt.getDataImbalanced() != null) {
                 selectStmt.switchJoinTables();
             }
@@ -301,23 +304,23 @@ public class TestFixListener extends HplsqlBaseListener {
 
 
         if(ctx.T_ON() != null) {
-            //判断join子句中是否存在 + / - / * / /
+            // Determine whether there is  + / - / * / / in join clause
             HplsqlParser.Bool_expr_binaryContext boolBinaryContext;
 
             if(ctx.bool_expr().bool_expr_logical_operator() != null){
                 return;
             }
-            //表达式两侧不存在括号的情况
+            // no parentheses on either side of the expression
             else if (ctx.bool_expr().T_OPEN_P() == null) {
                 boolBinaryContext = ctx.bool_expr().bool_expr_atom().bool_expr_binary();
             }
-            //表达式两侧存在括号
+            // Parentheses around the expression
             else {
                 boolBinaryContext = ctx.bool_expr().bool_expr(0).bool_expr_atom().bool_expr_binary();
             }
 
             HplsqlParser.ExprContext leftSymbol = boolBinaryContext.expr(0);
-            //处理子表达式存在括号的情况
+            // Handle cases where parentheses exist in subexpressions
             if(leftSymbol.getChild(0).getText().equals("(")){
                 leftSymbol = leftSymbol.expr(0);
             }
@@ -326,33 +329,6 @@ public class TestFixListener extends HplsqlBaseListener {
                 rightSymbol = rightSymbol.expr(0);
             }
 
-//            //判断是否在on后的布尔表达式中使用了函数
-//            if(leftSymbol.expr_func() == null && leftSymbol.expr_agg_window_func() == null
-//                    && rightSymbol.expr_func() == null && rightSymbol.expr_agg_window_func() == null){
-//                //什么都不干
-//            }
-//            else{
-//                System.out.println("不要在谓词中使用函数");
-//                returnMessageEntity.addSuggestion("不要在谓词中使用函数");
-//            }
-//
-//            //判断是否在on后的布尔表达式中进行了四则运算
-//            if (leftSymbol.T_ADD() == null && leftSymbol.T_SUB() == null && leftSymbol.T_MUL() == null && leftSymbol.T_DIV() == null
-//                    && rightSymbol.T_ADD() == null && rightSymbol.T_SUB() == null && rightSymbol.T_MUL() == null && rightSymbol.T_DIV() == null) {
-//                //什么都不干
-//            } else {
-//                System.out.println("不要在join子句中进行运算");
-//                returnMessageEntity.addSuggestion("不要在join子句中进行运算");
-//            }
-//
-//            //TODO:处理别名的情况
-//            //判断是否将不同数据类型字段进行join
-//            if(!MysqlUtil.compareParamType(leftSymbol.getChild(0).getText(), rightSymbol.getChild(0).getText())){
-//                System.out.println("不要将不同数据类型字段进行join");
-//                returnMessageEntity.addSuggestion("不要将不同数据类型字段进行join");
-//            }
-
-            //判断是否存在数据倾斜
             String[] table1 = leftSymbol.getChild(0).getText().split("\\.");
             String[] table2 = rightSymbol.getChild(0).getText().split("\\.");
             if(table1.length >= 2 || table2.length >= 2){
@@ -368,10 +344,6 @@ public class TestFixListener extends HplsqlBaseListener {
                 joinParams.add(tableName2);
                 joinParams.add(column2);
                 returnMessageEntity.setJoinParams(joinParams);
-//                if(HiveUtil.isDataImbalanced(tableName1, column1, tableName2, column2)){
-//                    System.out.println("可能存在数据倾斜！");
-//                    returnMessageEntity.addSuggestion("可能存在数据倾斜！");
-//                }
             }
 
         }
@@ -395,47 +367,10 @@ public class TestFixListener extends HplsqlBaseListener {
         }
     }
 
-    //anti-pattern:不要在where字句中进行运算
+    //anti-pattern: Do not perform operations in where clause
     @Override
     public void enterWhere_clause(HplsqlParser.Where_clauseContext ctx) {
         hasWhere = true;
-//        HplsqlParser.Bool_expr_binaryContext boolBinaryContext;
-//        if(ctx.bool_expr().T_OPEN_P() == null){
-//            if(ctx.bool_expr().bool_expr_atom() == null){
-//                // 与其他情况可能冲突
-//                return;
-//            }
-//            boolBinaryContext = ctx.bool_expr().bool_expr_atom().bool_expr_binary();
-//        }
-//        else{
-//            boolBinaryContext = ctx.bool_expr().bool_expr(0).bool_expr_atom().bool_expr_binary();
-//        }
-//
-//        //TODO:修复构建where条件部分
-//        selectStmt.setWhereCondition(boolBinaryContext.getText());
-//
-//        HplsqlParser.ExprContext leftSymbol = boolBinaryContext.expr(0);
-//        HplsqlParser.ExprContext rightSymbol = boolBinaryContext.expr(1);
-//
-//        //判断是否在where后的布尔表达式中使用了函数
-//        if(leftSymbol.expr_func() == null && leftSymbol.expr_agg_window_func() == null
-//                && rightSymbol.expr_func() == null && rightSymbol.expr_agg_window_func() == null){
-//            //什么都不干
-//        }
-//        else{
-//            System.out.println("不要在谓词中使用函数");
-//            returnMessageEntity.addSuggestion("不要在谓词中使用函数");
-//        }
-//
-//        //判断是否在where后的布尔表达式中进行了四则运算
-//        if(leftSymbol.T_ADD() == null && leftSymbol.T_SUB() == null && leftSymbol.T_MUL() == null && leftSymbol.T_DIV() == null
-//                && rightSymbol.T_ADD() == null && rightSymbol.T_SUB() == null && rightSymbol.T_MUL() == null && rightSymbol.T_DIV() == null){
-//
-//        }
-//        else{
-//            System.out.println("不要在where子句中进行运算");
-//            returnMessageEntity.addSuggestion("不要在where子句中进行运算");
-//        }
         selectStmt.setWhereCondition(getAllBoolExpr(ctx.bool_expr()));
     }
 
@@ -444,7 +379,7 @@ public class TestFixListener extends HplsqlBaseListener {
         hasWhere = false;
     }
 
-    // 使用select *
+    // use select *
     @Override
     public void enterSelect_list_asterisk(HplsqlParser.Select_list_asteriskContext ctx){
         returnMessageEntity.addSuggestion(apDB.getSug("Select *"));
@@ -453,7 +388,7 @@ public class TestFixListener extends HplsqlBaseListener {
         selectStmt.addColumn("columnN",null);
     }
 
-    // 使用having进行过滤
+    // Use having for filtering
     @Override
     public void enterNon_reserved_words(HplsqlParser.Non_reserved_wordsContext ctx){
         if(ctx.getText().equalsIgnoreCase("having")){
@@ -486,14 +421,14 @@ public class TestFixListener extends HplsqlBaseListener {
         }
     }
 
-    // 使用order by
+    // use order by
     @Override
     public void enterOrder_by_clause(HplsqlParser.Order_by_clauseContext ctx){
         returnMessageEntity.addSuggestion(apDB.getSug("Order by"));
 
-        //TODO:修复过程构造Order by
+        // Repair process construction Order by
         List<ParseTree> exprContext = ctx.children;
-        //去除order 和 by
+        // Remove order and by
         for(int i = 0;i<2;i++){
             exprContext.remove(0);
         }
@@ -516,7 +451,7 @@ public class TestFixListener extends HplsqlBaseListener {
         }
     }
 
-    // 在date_sub()中使用interval
+    // Use interval in date_sub()
     private boolean intervalInDatesub = false;
 
     @Override
@@ -524,9 +459,9 @@ public class TestFixListener extends HplsqlBaseListener {
         intervalInDatesub = true;
     }
 
-    // group by不和聚集函数搭配使用
-    // anti-pattern: select的列未在group by中
-    // 使用having进行过滤: 若搭配group by，则OK
+    // group by is not used with aggregate functions
+    // anti-pattern: The selected column is not in the group by
+    // Use having to filter, or DONOT if matched with group by
     private boolean isGather = false;
 
     @Override
@@ -536,10 +471,10 @@ public class TestFixListener extends HplsqlBaseListener {
         }
         groupByFlag.add(1);
         List<HplsqlParser.ExprContext> exprContext = ctx.expr();
-        //遍历group后的expr列表并将其中元素从selectItemList中删除
+        // Traverse the expr list after the group and delete its elements from selectItemList
         for(HplsqlParser.ExprContext expr:exprContext){
 
-            //TODO:修复语句构造group by条件
+            // Repair statement construction group by condition
             selectStmt.addGroupByCondition(expr.getText());
 
             if(selectItemList.contains(expr.getText())){
@@ -550,7 +485,7 @@ public class TestFixListener extends HplsqlBaseListener {
         }
     }
 
-    // 在大表中(频繁)使用count(distinct )
+    // Use count(distinct) in large tables frequently
     @Override
     public void enterExpr_agg_window_func(HplsqlParser.Expr_agg_window_funcContext ctx){
         if(ctx.getText().toLowerCase().contains("count(distinct")){
@@ -559,8 +494,8 @@ public class TestFixListener extends HplsqlBaseListener {
         isGather = true;
     }
 
-    // case语句中then和else后数据类型不一致
-    // 判断整数（int）
+    // The data types after then and else in the case statement are inconsistent
+    // Judge integer (int)
     private boolean isInteger(String t) {
         if (null == t|| "".equals(t)) {
             return false;
@@ -583,7 +518,7 @@ public class TestFixListener extends HplsqlBaseListener {
         }
     }
 
-    // 建多个相同的表
+    // Create multiple identical tables
     HashSet<String> colName = new HashSet<>();
     String createTableName = null;
     
@@ -605,7 +540,7 @@ public class TestFixListener extends HplsqlBaseListener {
         }
     }
 
-    // 在有分区的表上没有使用分区查询
+    // No partition query is used on a partitioned table
     private boolean hasWhere=false;
     List<String> whereItemList = new ArrayList<>();
 
@@ -641,16 +576,16 @@ public class TestFixListener extends HplsqlBaseListener {
 
             HplsqlParser.ExprContext leftSymbol = ctx.bool_expr_binary().expr(0);
             HplsqlParser.ExprContext rightSymbol = ctx.bool_expr_binary().expr(1);
-            //判断是否在where后的布尔表达式中使用了函数
+            // Determine whether a function is used in the Boolean expression after where
             if(leftSymbol.expr_func() == null && leftSymbol.expr_agg_window_func() == null
                     && rightSymbol.expr_func() == null && rightSymbol.expr_agg_window_func() == null){
-                //什么都不干
+                // do nothing
             }
             else{
                 returnMessageEntity.addSuggestion(apDB.getSug("Func in pred"));
             }
 
-            //判断是否在where后的布尔表达式中进行了四则运算
+            // Determine whether four operations are performed in the Boolean expression after where
             if(leftSymbol.T_ADD() == null && leftSymbol.T_SUB() == null && leftSymbol.T_MUL() == null && leftSymbol.T_DIV() == null
                     && rightSymbol.T_ADD() == null && rightSymbol.T_SUB() == null && rightSymbol.T_MUL() == null && rightSymbol.T_DIV() == null){
 
@@ -661,7 +596,7 @@ public class TestFixListener extends HplsqlBaseListener {
         }
         else if(hasJoin){
             HplsqlParser.ExprContext leftSymbol = ctx.bool_expr_binary().expr(0);
-            //处理子表达式存在括号的情况
+            // Handle cases where parentheses exist in subexpressions
             if(leftSymbol.getChild(0).getText().equals("(")){
                 leftSymbol = leftSymbol.expr(0);
             }
@@ -670,29 +605,22 @@ public class TestFixListener extends HplsqlBaseListener {
                 rightSymbol = rightSymbol.expr(0);
             }
 
-            //判断是否在on后的布尔表达式中使用了函数
+            // Determine whether a function is used in the boolean expression after on
             if(leftSymbol.expr_func() == null && leftSymbol.expr_agg_window_func() == null
                     && rightSymbol.expr_func() == null && rightSymbol.expr_agg_window_func() == null){
-                //什么都不干
+                // do nothing
             }
             else{
                 returnMessageEntity.addSuggestion(apDB.getSug("Func in pred"));
             }
 
-            //判断是否在on后的布尔表达式中进行了四则运算
+            // Determine whether four operations are performed in the Boolean expression after on
             if (leftSymbol.T_ADD() == null && leftSymbol.T_SUB() == null && leftSymbol.T_MUL() == null && leftSymbol.T_DIV() == null
                     && rightSymbol.T_ADD() == null && rightSymbol.T_SUB() == null && rightSymbol.T_MUL() == null && rightSymbol.T_DIV() == null) {
                 //什么都不干
             } else {
                 returnMessageEntity.addSuggestion(apDB.getSug("Cal in join"));
             }
-
-//            //TODO:处理别名的情况
-//            //判断是否将不同数据类型字段进行join
-//            if(!MysqlUtil.compareParamType(leftSymbol.getChild(0).getText(), rightSymbol.getChild(0).getText())){
-//                System.out.println("不要将不同数据类型字段进行join");
-//                returnMessageEntity.addSuggestion("不要将不同数据类型字段进行join");
-//            }
         }
     }
 

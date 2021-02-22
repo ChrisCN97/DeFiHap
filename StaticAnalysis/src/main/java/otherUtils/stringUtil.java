@@ -14,9 +14,9 @@ public class stringUtil {
         StringBuilder convertedSql = new StringBuilder(sql);
         String sql2lower = sql.toLowerCase();
         String[] tokens = sql2lower.split("[ (),;]+");
-        //第几个join
+        // Which join
         List<Integer> joinCount = new ArrayList<>();
-        //第几个token
+        // Which token
         List<Integer> joinPos = new ArrayList<>();
         int count = 0;
         for(int i = 0;i < tokens.length;i++){
@@ -53,7 +53,7 @@ public class stringUtil {
             }
             number++;
         }
-        int i = findMatcher.start();//“A”第二次出现的位置
+        int i = findMatcher.start();// The second occurrence of "A"
         return(i);
     }
 }

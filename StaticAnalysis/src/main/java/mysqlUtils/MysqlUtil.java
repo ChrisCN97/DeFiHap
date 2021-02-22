@@ -31,9 +31,9 @@ public class MysqlUtil {
             }
             ps = connection.prepareStatement("select PART_ID from PARTITIONS where TBL_ID=\"" + leftTableID + "\"");
             r = ps.executeQuery();
-            // 判断分区表查询结果是否为空
+            // Determine whether the query result of the partition table is empty
             if(r.next()){
-                //获取分区表的记录总数
+                // Get the total number of records in the partition table
                 ps = connection.prepareStatement("select sum(PARAM_VALUE) from (select PART_ID from PARTITIONS where TBL_ID=\"" + leftTableID + "\") as partID join PARTITION_PARAMS on partID.PART_ID = PARTITION_PARAMS.PART_ID where PARAM_KEY = \"numRows\"");
                 r = ps.executeQuery();
                 while (r.next()) {
@@ -41,7 +41,7 @@ public class MysqlUtil {
                 }
             }
             else {
-                //获取非分区表的记录总数
+                // Get the total number of records in a non-partitioned table
                 ps = connection.prepareStatement("select PARAM_VALUE from TABLE_PARAMS where TBL_ID=\"" + leftTableID + "\" and PARAM_KEY=\"numRows\"");
                 r = ps.executeQuery();
                 while (r.next()) {
@@ -52,7 +52,7 @@ public class MysqlUtil {
             ps = connection.prepareStatement("select PART_ID from PARTITIONS where TBL_ID=\"" + rightTableID + "\"");
             r = ps.executeQuery();
             if(r.next()){
-                //获取分区表的记录总数
+                // Get the total number of records in the partition table
                 ps = connection.prepareStatement("select sum(PARAM_VALUE) from (select PART_ID from PARTITIONS where TBL_ID=\"" + rightTableID + "\") as partID join PARTITION_PARAMS on partID.PART_ID = PARTITION_PARAMS.PART_ID where PARAM_KEY = \"numRows\"");
                 r = ps.executeQuery();
                 while (r.next()) {
@@ -266,57 +266,59 @@ public class MysqlUtil {
                 confDic.put(conf[0], conf[1]);
             }
             if(!confDic.getOrDefault("hive.optimize.cp", "true").equals("true")){
-                configSuggestions.add("未启用自动行剪裁, 应设置hive.optimize.cp=true");
+                configSuggestions.add("Automatic line trimming is not enabled, please set: hive.optimize.cp=true");
             }
             if(!confDic.getOrDefault("hive.optimize.pruner", "true").equals("true")){
-                 configSuggestions.add("未启用自动分区剪裁, 应设置hive.optimize.pruner=true");
+                 configSuggestions.add("Automatic partition trimming is not enabled, please set: hive.optimize.pruner=true");
             }
             if(!confDic.getOrDefault("mapred.compress.map", "true").equals("true")){
-                 configSuggestions.add("未启用map输出压缩, 应设置mapred.compress.map.output=true");
+                 configSuggestions.add("Map output compression is not enabled, please set: mapred.compress.map.output=true");
             }
             if(!confDic.getOrDefault("mapred.output.compress", "true").equals("true")){
-                 configSuggestions.add("未启用job输出压缩, 应设置mapred.output.compress=true");
+                 configSuggestions.add("Job output compression is not enabled, please set: mapred.output.compress=true");
             }
             if(!confDic.getOrDefault("mapred.output.compress", "true").equals("true")
                     && !confDic.getOrDefault("hive.optimize.bucketmapjoin", "true").equals("true")){
-                 configSuggestions.add("未启用联接使用bucket, 应设置hive.enforce.bucketing=true, " +
+                 configSuggestions.add("Use bucket without connection, please set: hive.enforce.bucketing=true, " +
                         "hive.optimize.bucketmapjoin=true");
             }
             if(!confDic.getOrDefault("hive.exec.parallel", "true").equals("true")){
-                 configSuggestions.add("未启用并行执行功能, 应设置hive.exec.parallel=true");
+                 configSuggestions.add("Parallel execution is not enabled, please set: hive.exec.parallel=true");
             }
             if(!confDic.getOrDefault("hive.vectorized.execution.enabled", "true").equals("true")
                     && !confDic.getOrDefault("hive.vectorized.execution.reduce.enabled", "true").equals("true")){
-                 configSuggestions.add("未启用矢量化, 应设置hive.vectorized.execution.enabled=true, " +
+                 configSuggestions.add("Vectorization is not enabled, please set: hive.vectorized.execution.enabled=true, " +
                         "hive.vectorized.execution.reduce.enabled=true");
             }
             if(!confDic.getOrDefault("hive.cbo.enable", "true").equals("true")){
-                 configSuggestions.add("未启用Cost Based Optimizer(CBO), 应设置hive.cbo.enable=true");
+                 configSuggestions.add("Cost Based Optimizer(CBO) is not enabled, please set: hive.cbo.enable=true");
             }
             if(!confDic.getOrDefault("hive.server2.thrift.min.worker.threads", "1").equals("1")
                     && !confDic.getOrDefault("hive.server2.thrift.max.worker.threads", "1").equals("1")){
-                 configSuggestions.add("Task has been rejected by ExecutorService, 应设置hive.server2.thrift.max.worker.threads=1, " +
+                 configSuggestions.add("Task has been rejected by ExecutorService, please set: hive.server2.thrift.max.worker.threads=1, " +
                         "hive.server2.thrift.min.worker.threads=1");
             }
             if(!confDic.getOrDefault("hive.exec.dynamic.partition.mode", "nonstrict").equals("nonstrict")){
-                 configSuggestions.add("对分区表进行insert未设置动态分区, 应设置hive.exec.dynamic.partition.mode=nonstrict");
+                 configSuggestions.add("Insert the partition table without setting dynamic partition" +
+                         ", please set: hive.exec.dynamic.partition.mode=nonstrict");
             }
             if(!confDic.getOrDefault("hive.map.aggr", "true").equals("true")
                     && !confDic.getOrDefault("hive.groupby.mapaggr.checkinterval", "100000").equals("100000")){
-                 configSuggestions.add("未启用map端部分聚合功能, 应设置hive.map.aggr=true, " +
+                 configSuggestions.add("Map partial aggregation function is not enabled, please set: hive.map.aggr=true, " +
                         "hive.groupby.mapaggr.checkinterval=100000");
             }
             if(!confDic.getOrDefault("hive.groupby.skewindata", "true").equals("true")){
-                 configSuggestions.add("未启用发生数据倾斜时自动进行负载均衡, 应设置hive.groupby.skewindata=true");
+                 configSuggestions.add("Automatic load balancing when data skew is not enabled, " +
+                         "please set: hive.groupby.skewindata=true");
             }
             if(!confDic.getOrDefault("hive.auto.convert.join", "true").equals("true")
                     && !confDic.getOrDefault("hive.mapjoin.smalltable.filesize", "25000000").equals("25000000")){
-                 configSuggestions.add("小表join大表，未启用自动尝试map join, 应设置hive.auto.convert.join=true, " +
-                        "hive.mapjoin.smalltable.filesize=25000000");
+                 configSuggestions.add("Small table join large table, automatically try mapjoin is not enabled, " +
+                         "please set: hive.auto.convert.join=true, hive.mapjoin.smalltable.filesize=25000000");
             }
             if(!confDic.getOrDefault("hive.merge.mapfiles", "true").equals("true")
                     && !confDic.getOrDefault("hive.merge.mapredfiles", "true").equals("true")){
-                 configSuggestions.add("未启用小文件自动合并, 应设置hive.merge.mapfiles=true, " +
+                 configSuggestions.add("Automatic merging of small files is not enabled, please set: hive.merge.mapfiles=true, " +
                         "hive.merge.mapredfiles=true");
             }
             return configSuggestions;

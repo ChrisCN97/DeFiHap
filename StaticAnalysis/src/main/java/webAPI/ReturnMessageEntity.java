@@ -13,7 +13,7 @@ public class ReturnMessageEntity {
     @JSONField(name = "fixedSuggestions")
     public List<String> fixedSuggestions;
     @JSONField(name = "joinParams")
-    //参数顺序：t1_name,t1_joinkey,t2_name,t2_joinkey
+    //Parameter order: t1_name,t1_joinkey,t2_name,t2_joinkey
     public List<String> joinParams;
 
     @JSONField(name = "configSuggestions")

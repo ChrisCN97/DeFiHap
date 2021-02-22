@@ -13,13 +13,13 @@ public class StaticCheckImp {
 
     public static ReturnMessageEntity testRun(String hiveql){
         List<String> fixedSuggestions=new ArrayList<>();
-        fixedSuggestions.add("不可以哦.");
+        fixedSuggestions.add("test");
         List<String>joinParams=new ArrayList<>();
         joinParams.add("a");
         joinParams.add("key");
         joinParams.add("b");
         joinParams.add("key");
-        //如果没有join，joinParams就直接设置为null，json中就没有joinParams这一项
+        // If there is no join, joinParams is directly set to null, and there is no joinParams in json
         ReturnMessageEntity returnMessageEntity=new ReturnMessageEntity("select a from b",fixedSuggestions,null);
         return  returnMessageEntity;
     }
