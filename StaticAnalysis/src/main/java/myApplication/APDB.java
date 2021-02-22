@@ -9,7 +9,7 @@ public class APDB {
     
     public APDB(){
         apDic = new HashMap<String, String>(){{
-            // 更改简称，请进行全项目搜索替换
+            // Change the short name, please search and replace it in the whole project
             put("Too many join", "Do not use too many 'Join' clauses.");
             put("Cal in where", "Do not calculate in 'where'.");
             put("Cal in join", "Do not calculate in 'join'.");
@@ -25,12 +25,12 @@ public class APDB {
             put("Less left join", "Please put the table containing less records on the left side of join. Or check database connection.");
             put("Similar table", "Creating table \"mrtest_50\" is similar to existed table \"mrtest_50\", please check again.");
             put("Use partition", "Warning! Please utilize partition in the query. Or check database connection.");
-            // illegal input 要在 MergedTest.java 中单独替换
+            // illegal input should be replaced separately in MergedTest.java
             put("Illegal input", "This HiveQL may be illegal, please check your input or the database connection.");
             put("Correct HQL", "Correct HQL.");
         }};
 
-        //记录已做修复的AP，只有检测到这些警告，才会生成修复语句
+        // Record the APs that have been repaired. Only when these warnings are detected, will the repair statement be generated
         apFixed = new HashSet<String>(){{
             add("Less left join");
             add("Having");
@@ -61,7 +61,7 @@ public class APDB {
         return sug;
     }
 
-    //判断是否全是已做修复的AP
+    // Determine whether all APs have been repaired
     public Boolean isAllFixed(){
         return apTryFixed.size()>0 && apFixed.containsAll(apTryFixed);
     }

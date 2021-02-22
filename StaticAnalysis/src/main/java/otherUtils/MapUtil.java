@@ -3,7 +3,7 @@ package otherUtils;
 import java.util.*;
 
 public class MapUtil {
-    // Map的value值降序排序
+    // Sort the value of map in descending order
     public static <K, V extends Comparable<? super V>> Map<K, V> sortDescend(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
@@ -21,7 +21,7 @@ public class MapUtil {
         return returnMap;
     }
 
-    // Map的value值升序排序
+    // Sort the value of map in ascending order
     public static <K, V extends Comparable<? super V>> Map<K, V> sortAscend(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new ArrayList<Map.Entry<K, V>>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<K, V>>() {

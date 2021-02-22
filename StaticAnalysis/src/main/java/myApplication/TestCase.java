@@ -103,7 +103,7 @@ public class TestCase {
                 {{"selct * from t1"}, {"13"}},
                 {{""}, {"13"}},
                 {{"123"}, {"13"}},
-                {{"啊啦啦啦"}, {"13"}},
+                {{"alalala"}, {"13"}},
                 {{"select t1.a from t2 where t3.b = t4.b"}, {"13"}}
         };
         HashMap<String, String> apMap = new HashMap<String, String>();

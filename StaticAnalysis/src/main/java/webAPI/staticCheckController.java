@@ -18,7 +18,7 @@ public class staticCheckController {
             return messageJson;
         }
 //        MergedTest.astCheck(hiveql);
-        return "hiveql格式错误";
+        return "wrong hiveql";
     }
     @RequestMapping(value="/astCheck",method = RequestMethod.POST)
     public String astCheck_Post(@RequestBody JSONObject hiveql){
@@ -30,7 +30,7 @@ public class staticCheckController {
             return messageJson;
         }
 //        MergedTest.astCheck(hiveql);
-        return "hiveql格式错误";
+        return "wrong hiveql";
     }
 
     @RequestMapping(value="/configCheck",method = RequestMethod.GET)

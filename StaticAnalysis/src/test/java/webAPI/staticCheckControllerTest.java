@@ -147,11 +147,15 @@ public class staticCheckControllerTest {
                 .andExpect(jsonPath("$.fixedHiveql").doesNotExist());
     }
 
-//    @Test
-//    public void configCheck() throws Exception {
-//        mockMvc.perform(MockMvcRequestBuilders.get("/configCheck")
-//                .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$").value(Matchers.containsInAnyOrder("Task has been rejected by ExecutorService, 应设置hive.server2.thrift.max.worker.threads=1, hive.server2.thrift.min.worker.threads=1","对分区表进行insert未设置动态分区, 应设置hive.exec.dynamic.partition.mode=nonstrict","未启用发生数据倾斜时自动进行负载均衡, 应设置hive.groupby.skewindata=true")));
-//    }
+    @Test
+    public void configCheck() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/configCheck")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(Matchers.containsInAnyOrder(
+                        "Task has been rejected by ExecutorService, please set: hive.server2.thrift.max.worker.threads=1, hive.server2.thrift.min.worker.threads=1",
+                        "Insert the partition table without setting dynamic partition, please set: hive.exec.dynamic.partition.mode=nonstrict",
+                        "Automatic load balancing when data skew is not enabled, please set: hive.groupby.skewindata=true"
+                )));
+    }
 }

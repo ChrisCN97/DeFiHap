@@ -2,9 +2,9 @@ package myApplication;
 
 public class Demo {
     public static void main(String[] args){
-        // 使用select *
+        // use select *
         String s1 = "select * from a";
-        // group by不和聚集函数搭配使用
+        // group by not used with aggregate functions
         String s2 = "select t3.name, t3.age from  t3 group by t3.name,t3.age;";
 
         String s4="SELECT n.name, a.age FROM mrtest_5k n JOIN mrtest_500 a ON n.city=a.city;";
@@ -15,7 +15,7 @@ public class Demo {
 
  //       MergedTest.astCheck(s4);
 
-        //配置项检测
+        // Configuration detection
         MergedTest.configCheck();
     }
 }

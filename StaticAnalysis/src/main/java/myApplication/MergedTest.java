@@ -8,6 +8,7 @@ import otherUtils.SqlParseCheck;
 import otherUtils.stringUtil;
 import webAPI.ReturnMessageEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MergedTest {
@@ -23,24 +24,24 @@ public class MergedTest {
                 return returnMessageEntity;
             }
             s = stringUtil.join2innerJoin(s);
-            //创建输入字节流
+            // Create input byte stream
             ANTLRInputStream input = new ANTLRInputStream(s);
-            //构建词法分析器
+            // Build a lexical analyzer
             HplsqlLexer lexer = new HplsqlLexer(input);
             lexer.removeErrorListeners();
             lexer.addErrorListener(HplsqlErrorListener.INSTANCE);
-            //将词存储在内存中
+            // Store words in memory
             CommonTokenStream tokens = new CommonTokenStream(lexer);
-            //构建语法分析器
+            // Building grammar parser
             HplsqlParser parser = new HplsqlParser(tokens);
             parser.removeErrorListeners();
             parser.addErrorListener(HplsqlErrorListener.INSTANCE);
-            //构建解析树
+            // Build parse tree
             ParseTree tree = parser.program();
 
-            //构建树遍历器
+            // Build tree walker
             ParseTreeWalker walker = new ParseTreeWalker();
-            //第一个参数是自己写的解析器
+            // The first parameter is the parser built before
 //        walker.walk(new MergedListener(),tree);
 
             TestFixListener testFixListener = new TestFixListener();
@@ -55,31 +56,34 @@ public class MergedTest {
     }
 
     public static List<String> configCheck(){
-        return MysqlUtil.configurationCheck();
+        List<String> res = MysqlUtil.configurationCheck();
+        System.out.println(res);
+        return res;
     }
 
     public static void main(String[] args) throws Exception {
-        // 使用select *
+        // use select *
 //        String s = "select * from a";
 
-        // 使用order by
+        // use order by
 //        String s = "select b from a order by b";
 
-        // group by不和聚集函数搭配使用
+        // Grouping by not using with aggregate functions
 //        String s = "select pokes.col1,unique1.col2 from unique1 left join pokes on pokes.id = unique1.id;";
 //        String s = "select t3.col1,t3.col2,sum(t3.col1) from (select t1.col1,t2.col2 from t1 join t2 on t1.id = t2.id group by t1.col1) as t3 group by t3.col1,t3.col2;";
 
-        // 建多个相同表
+        // Create multiple identical tables
 //        String s = "CREATE TABLE tableD (bar int, foo float);";
 //        String s = "create table mrtest_50 (a String, b int)";
 //        String s = "create table mrtest_502 (name String, age int, city int)";
 
-        // 条件允许时，没有将条目少的表放在join左侧，条目多的表放在join右侧
+        // When conditions permit, the table with few entries is not placed on the left side of join,
+        // or the table with many entries is placed on the right side
 //        String s = "SELECT t1.name, t2.age FROM mrtest_10 as t1 JOIN mrtest_500 as t2 ON t1.city=t2.city;";
 //        String s = "SELECT t1.name, t2.age FROM mrtest_500 as t1 JOIN mrtest_10 as t2 ON t1.city=t2.city;";  // AP
 //        String s = "select p1.name from mrtest_500 p1 join mrtest_50 p2 on p1.city = p2.city where p1.city = 1;";  // AP
 
-        // 使用having进行过滤 https://blog.csdn.net/high2011/article/details/82686858
+        // Use having for filtering https://blog.csdn.net/high2011/article/details/82686858
 //        String s = "SELECT id, avg(age) avaAge from table001 group by id having id >='20180901';";
 //        String s = "SELECT id from table001 having id >='20180901';";  // AP
         /*String s = "SELECT C.CustomerID, C.Name, Count(S.SalesID)\n" +
@@ -89,37 +93,37 @@ public class MergedTest {
                 "GROUP BY C.CustomerID, C.Name\n" +
                 "HAVING S.LastSaleDate BETWEEN '1/1/2019' AND '12/31/2019';";*/
 
-        // 在date_sub()中使用interval
+        // use interval in date_sub()
 //        String s = "Select date_add('2020-9-16', interval '10' day) from a;";  // AP
 //        String s = "Select mrtest_10.name, mrtest_500.age FROM mrtest_10 inner JOIN mrtest_500 on mrtest_10.age = mrtest_500.age group by mrtest_10.name;";  // AP
 //        String s = "select date_sub('2020-9-16',10) From a;";
 //        String s = "select '2020-9-16' - interval '10' day From a;";
 
-        // 在有分区的表上没有使用分区查询
+        // No partition query used on a partitioned table
 //        String s = "select name from partitiontable;";  // AP
         String s = "select name from partitiontable where name='cn';";  // AP
 //        String s = "select name from partitiontable where city='changzhou';";
 //        String s = "select name from partitiontable where city='changzhou' and name+1='cn';";
 
-        // select的列未在group by中
+        // The selected column is not in the group by
 //        String s = "select name, city, avg(age) from t group by name;";  // AP
 //        String s = "select name, city, avg(age) from t group by city, name;";
 
         // subselect
 //        String s = "select p1.name from mrtest_500 p1 join (select city from mrtest_50) p2 on p1.city = p2.city where p1.city = 1;";
 
-        // 不要过多使用join
+        // Don't use join too much
 //        String s = "select t1.name,t2.age from t1 inner join t2 on t1.id = t2.id;";
 
-        // 错误的语句
+        // Syntax error statement
 //        String s = "12345";
-//        String s = "啊啦啦啦";
+//        String s = "alalala";
 
-        astCheck(s);
+//        astCheck(s);
 
-        //System.out.println(tree.toStringTree(parser));
+//        System.out.println(tree.toStringTree(parser));
 
-        //配置项检测
-//        configCheck();
+        // Configuration detection
+        configCheck();
     }
 }
