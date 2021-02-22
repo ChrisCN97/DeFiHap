@@ -13,7 +13,7 @@ public class gen_joinMlpTrainTest {
             File file = new File(filename);
             InputStreamReader input = new InputStreamReader(new FileInputStream(file));
             BufferedReader bf = new BufferedReader(input);
-            // 按行读取字符串
+            // readline
             String str;
             while ((str = bf.readLine()) != null) {
                 arrayList.add(str);

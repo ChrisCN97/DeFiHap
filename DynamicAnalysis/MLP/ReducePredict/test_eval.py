@@ -32,13 +32,13 @@ from predict_reduces import pred_reduce_batch
 #     return counts
 
 
-#取出数据中 时间最短对应的reduce个数
+# get min time item for each query
 # results=pd.read_csv('./all/joinMlpTrainData_L.csv')
 # results=results.loc[results.groupby(["t1","key1","t2","key2"]).time.idxmin()]
 # print(results)
 # results.to_csv("./all/joinMLPTrainData_L_mintime.csv")
 
-#batch生成测试数据与真实数据组合，
+# picture batched predictions with real data
 # df=pd.read_csv('./all/joinMLPTrainData_L_mintime.csv')
 # df=pred_reduce_batch(df)
 # figsize = (10, 5)
@@ -49,7 +49,7 @@ from predict_reduces import pred_reduce_batch
 # plt.show()
 # df.to_csv('./Test_reduce_pred.txt')
 
-#对预测结果和真实数据测试
+# test bias between prediction and real data
 # test_result=pd.read_csv("./Test_reduce_pred.txt")
 # count_all=0
 # count_exact=0
@@ -80,7 +80,7 @@ from predict_reduces import pred_reduce_batch
 # # print(test_result.loc[test_result.pred_reduce.idxmax()])
 # print()
 
-#画出某组数据
+# picture a group of data
 train_all_df=pd.read_csv("./all/joinMlpTrainData_L.csv")
 df=train_all_df[(train_all_df["t1"]==55000) & (train_all_df["key1"]==14) & (train_all_df["t2"]==60000) & (train_all_df["key2"]==3) ]
 figsize = (20, 10)

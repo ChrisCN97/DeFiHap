@@ -8,18 +8,18 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Reduce task 数量设置不合理的Anti-pattern检测
- * 针对join操作，sql格式：SELECT a.name, b.age FROM a JOIN b ON a.city=b.city
+ * num of Reduce Anti-pattern
+ * specifically  for join query：SELECT a.name, b.age FROM a JOIN b ON a.city=b.city
  */
 public class ReduceNumCheck {
-    /*单join key计算规模大于此阈值，值得使用单个reduce来处理*/
+    /*single join key 's computation cost larger than this threshold，then its worth to ger one reduce to handle*/
     private int threshold;
 
     public ReduceNumCheck(int threshold){
         this.threshold = threshold;
     }
 
-    /*从集群获取逻辑CPU数*/
+    /*get logical num of CPU from cluster*/
     private static int getCpuNum(Statement ps){
         int cpuNum=-1;
         try{
@@ -38,7 +38,7 @@ public class ReduceNumCheck {
         return cpuNum;
     }
 
-    /*根据表名找表的记录数和key的数量*/
+    /*find key num and data num(row num) with table name*/
     public static int[] getRecordNumAndKeyNum(String table, String key, Statement ps) throws Exception {
         System.out.print("Start get info of table " + table);
         try {
@@ -56,7 +56,7 @@ public class ReduceNumCheck {
         }
     }
 
-    /*输出建议的reduce数量*/
+    /* recommend num of reduce*/
     public int reduceNumCheck(String table1, String key1, String table2, String key2){
         int cpuNum=0, keyNum1=0, keyNum2=0, recordNum1=0, recordNum2=0;
         try {
@@ -95,11 +95,11 @@ public class ReduceNumCheck {
         int keyNum = Math.min(keyNum1, keyNum2);
         int calculationScalePerKey = recordNum1/keyNum1 * recordNum2/keyNum2;
         int reduceNum;
-        // 若单key数据计算量超过阈值，则1key1reduce
+        // single key's data num > threshold，then 1key for 1reduce
         if(calculationScalePerKey > threshold){
             reduceNum = Math.min(keyNum, cpuNum);
         }else{
-            // 若未超过，则总共1reduce
+            // not larger，1reduce in total
             reduceNum = 1;
         }
         System.out.println("Suggest set "+reduceNum+" reduce task(s).");
@@ -138,11 +138,11 @@ public class ReduceNumCheck {
         int keyNum = Math.min(keyNum1, keyNum2);
         Long calculationScalePerKey = recordNum1/keyNum1 * recordNum2/keyNum2;
         int reduceNum;
-        // 若单key数据计算量超过阈值，则1key1reduce
+        // single key's data num > threshold，then 1key for 1reduce
         if(calculationScalePerKey > threshold){
             reduceNum = Math.min(keyNum, cpuNum);
         }else{
-            // 若未超过，则总共1reduce
+            // not larger, 1reduce in total
             reduceNum = 1;
         }
         System.out.println("Suggest set "+reduceNum+" reduce task(s).");

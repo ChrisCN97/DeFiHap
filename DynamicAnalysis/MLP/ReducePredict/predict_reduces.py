@@ -29,7 +29,7 @@ from Model import get_model
 #
 # all_features = test_data.loc[:, 't1':'reduce']
 #
-# # 减去均值，除以方差
+# # normalize data by minus average and then divided by variance
 # all_features = (all_features-all_features1_mean)/all_features1_std
 #
 # feat_dim = all_features.shape[1]
@@ -50,8 +50,9 @@ from Model import get_model
 # plt.show()
 #
 # best_reduce=result[result["time"] == result["time"].min()]
-# print ("最优reduce数：")
+# print ("best num of reduce：")
 # print(np.array(best_reduce["reduce"])[0])
+
 def get_normalize_param():
     train = pd.read_csv('./all/joinMlpTrainTrainData_L_notest.csv')
     test = pd.read_csv('./all/joinMlpTrainTest_L.csv')
@@ -72,7 +73,7 @@ def pred_reduce_single(t1, key1, t2, key2, mean, std):
 
     all_features = test_data.loc[:, 't1':'reduce']
 
-    # 减去均值，除以方差
+    # normalize data by minus average and then divided by variance
     all_features = (all_features - mean) / std
 
     feat_dim = all_features.shape[1]
@@ -104,7 +105,7 @@ def pred_reduce(t1, key1, t2, key2):
 
     all_features = test_data.loc[:, 't1':'reduce']
 
-    # 减去均值，除以方差
+    # normalize data by minus average and then divided by variance(same as training)
     all_features = (all_features - all_features1_mean) / all_features1_std
 
     feat_dim = all_features.shape[1]
@@ -116,7 +117,7 @@ def pred_reduce(t1, key1, t2, key2):
 
     result = pred_raw(net, test_data, test_features)
     best_reduce = result[result["time"] == result["time"].min()]
-    print("最优reduce数：")
+    print("best num of reduce：")
     print(np.array(best_reduce["reduce"])[0])
 
     # figsize = (10, 5)

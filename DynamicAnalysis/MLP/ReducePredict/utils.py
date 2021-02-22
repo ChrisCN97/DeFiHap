@@ -1,8 +1,4 @@
 # encoding: utf-8
-"""
-@author:  sherlock
-@contact: sherlockliao01@gmail.com
-"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -42,7 +38,7 @@ def train_model(model, x_train, y_train, x_valid, y_valid, epochs, batch_size, l
     criterion = nn.MSELoss()
 
     for e in range(epochs):
-        # 训练模型
+        # train model
         model.train()
         for data in train_data:
             x, y = data
@@ -59,7 +55,7 @@ def train_model(model, x_train, y_train, x_valid, y_valid, epochs, batch_size, l
 
         metric_log['train_rmse'].append(get_rmse(model, x_train, y_train, use_gpu))
 
-        # 测试模型
+        # test model
         if x_valid is not None:
             metric_log['valid_rmse'].append(get_rmse(model, x_valid, y_valid, use_gpu))
             print_str = 'epoch: {}, train rmse: {:.3f}, valid rmse: {:.3f}' \
@@ -70,7 +66,7 @@ def train_model(model, x_train, y_train, x_valid, y_valid, epochs, batch_size, l
             print(print_str)
             print()
 
-    # 可视化
+    # visualization
     figsize = (10, 5)
     fig = plt.figure(figsize=figsize)
     plt.plot(metric_log['train_rmse'], color='red', label='train')

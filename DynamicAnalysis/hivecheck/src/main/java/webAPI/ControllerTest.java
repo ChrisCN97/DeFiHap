@@ -32,7 +32,7 @@ public class ControllerTest {
     @Test
     public void join_check1() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/join_check")
-                // 设置返回值类型为utf-8，否则默认为ISO-8859-1
+                // set return data type utf-8， default is ISO-8859-1
                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .param("t1_name", "mrtest_50")
                 .param("t1_key", "city")
@@ -46,7 +46,7 @@ public class ControllerTest {
     @Test
     public void join_check2() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/join_check")
-                // 设置返回值类型为utf-8，否则默认为ISO-8859-1
+                // set return data type utf-8， default is ISO-8859-1
                 .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .param("t1_name", "mrtest_70kskew")
                 .param("t1_key", "loc")

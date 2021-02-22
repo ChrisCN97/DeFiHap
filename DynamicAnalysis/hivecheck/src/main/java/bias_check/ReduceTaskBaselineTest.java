@@ -8,14 +8,14 @@ import java.sql.Statement;
 import java.util.Properties;
 
 /**
- * 测量该集群下，单个reduce节点应该至少处理多大的数据量
- * reduce启动有开销，若单个reduce处理数据过少，则应该将任务合并到更少的reduce里共同完成
+ *  test how large data can single reduce node handle at least
+ * because there's cost to assign a new reduce， with little data to handle we'd better combine them into less reduce num
  * redBench_5000 join redBench_12500 Reduce 1 *** Time cost: 42319
  * redBench_5000 join redBench_12500 Reduce 5 *** Time cost: 38362
  * Calculation scale threshold: 2500000
  */
 public class ReduceTaskBaselineTest {
-    /*执行实验SQL方法*/
+    /* execute test SQL function*/
     private long execSQL(String[] conf, String sql, Statement ps) throws SQLException {
         for(String c : conf){
             ps.execute(c);
@@ -28,7 +28,7 @@ public class ReduceTaskBaselineTest {
         return (System.currentTimeMillis()-startTime)/3;
     }
 
-    /*测试主程序*/
+    /* main for test function*/
     public int test(){
         System.out.println("This is a performance baseline test, " +
                 "please make sure hadoop cluster is in the best situation, this test may take a long time.");

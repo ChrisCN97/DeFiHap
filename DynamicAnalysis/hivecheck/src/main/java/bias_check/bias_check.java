@@ -74,7 +74,7 @@ public class bias_check {
 
 
         if((1.0*maxtime/(1.0*(reduce_total-maxtime)/(reduce_jobs-1))) >1.5){
-            System.out.println("attention：检测到reduce完成时间差异过大，可能存在数据倾斜");
+            System.out.println("reduce completion time difference is too large,there may be data skew");
         }
 
 }

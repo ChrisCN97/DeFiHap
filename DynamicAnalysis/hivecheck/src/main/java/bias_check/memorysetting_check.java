@@ -78,10 +78,10 @@ public class memorysetting_check {
         }
         System.out.println(logs);
         if(logs.indexOf("running beyond physical memory limits")>0 | logs.indexOf("running beyond virtual memory limits")>0){
-            System.out.println("mapreduce.map.memory.mb或mapreduce.reduce.memory.mb设置不合理");
+            System.out.println("mapreduce.map.memory.mb or mapreduce.reduce.memory.mb is not proper");
         }
         else {
-            System.out.println("mapreduce.map.memory.mb或mapreduce.reduce.memory.mb设置不合理");
+            System.out.println("mapreduce.map.memory.mb or mapreduce.reduce.memory.mb is not proper");
         }
     }
 }
