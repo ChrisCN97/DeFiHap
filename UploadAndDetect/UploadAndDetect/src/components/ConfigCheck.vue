@@ -77,15 +77,15 @@ export default {
       _this.recommendReduceNum = "";
       _this
         .$axios({
-          //创建接口
-          method: "get", //类型为get请求
-          url: _this.api1url + "/configCheck", //请求的接口地址
+          // Create interface
+          method: "get", // Request type is get
+          url: _this.api1url + "/configCheck", // Requested interface address
         })
         .then(function (response) {
-          //请求成功返回
+          // Request returned successfully
           _this.isStart = true;
           _this.fixLoading = false ;
-          console.log(response.data); //打印请求的数据
+          console.log(response.data); // Print the requested data
           for(var i=0;i<response.data.length;i++){
             console.log(response.data[i]);
             _this.fixSuggestions.push({"id":i+1,"suggestion":response.data[i]});

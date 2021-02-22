@@ -131,18 +131,18 @@ export default {
       _this.recommendReduceNum = "";
       _this
         .$axios({
-          //创建接口
-          method: "post", //类型为get请求
-          url: _this.api1url + "/astCheck", //请求的接口地址
+          // Create interface
+          method: "post", // Request type is get
+          url: _this.api1url + "/astCheck", // Requested interface address
           data: {
             hiveql: this.hiveQL,
           },
         })
         .then(function (response) {
-          //请求成功返回
+          // Request returned successfully
           _this.isStart = true;
           _this.fixLoading = false ;
-          console.log(response.data); //打印请求的数据
+          console.log(response.data); // Print the requested data
           _this.fixedHiveql = response.data.fixedHiveql;
           for(var i=0;i<response.data.fixedSuggestions.length;i++){
             console.log(response.data.fixedSuggestions[i]);
@@ -178,7 +178,7 @@ export default {
         }
       }).then(function(response){
         _this.joinLoading = false;
-        console.log(response.data); //打印请求的数据
+        console.log(response.data); // Print the requested data
         _this.dataImbalancedSuggest = response.data.dataImbalancedSuggest;
         _this.recommendReduceNum = response.data.recommendReduceNum;
         if(_this.dataImbalancedSuggest === ""){
