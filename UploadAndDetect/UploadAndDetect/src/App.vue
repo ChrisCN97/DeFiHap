@@ -35,13 +35,13 @@ export default {
     };
 },
 methods: {
-    //定义方法，获取高度减去头尾
+    // Define method, get height minus head and tail
     getHeight() {
         this.defaultHeight.height = window.innerHeight - 90 + "px";
     }
 },
 created() {
-    //页面创建时执行一次getHeight进行赋值，顺道绑定resize事件
+    // When the page is created, getHeight is executed once for assignment, and the resize event is bound by the way
     window.addEventListener("resize", this.getHeight);
     console.log("height");
     this.getHeight();

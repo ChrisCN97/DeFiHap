@@ -43,7 +43,7 @@ export default {
     }
   },
   mounted:function(){
-      this.getConfig();//需要触发的函数
+      this.getConfig();// Function to be triggered
     },
  methods: {
     onSubmit() {

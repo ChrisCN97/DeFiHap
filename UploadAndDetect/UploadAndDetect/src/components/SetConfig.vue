@@ -50,7 +50,7 @@ export default {
     };
   },
   mounted: function () {
-    this.getConfig(); //需要触发的函数
+    this.getConfig(); // Function to be triggered
   },
   methods: {
     onSubmit() {
@@ -87,12 +87,12 @@ export default {
           if (response.status == 200) {
             console.log("save successfully");
             _this.$message({
-              message: "保存成功",
+              message: "Save successfully",
               type: "success",
             });
           } else {
             _this.$message({
-              message: "保存失败",
+              message: "Save failed",
               type: "error",
             });
           }
