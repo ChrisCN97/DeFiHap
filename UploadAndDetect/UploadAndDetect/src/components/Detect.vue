@@ -1,84 +1,82 @@
 <template>
-  <div>
-    <h1>Enter the SQL Below</h1>
+  <div style="padding: 0 40px">
+    <h1>HiveQL Anti-Patterns Detecting and Fixing</h1>
+
     <el-input
       type="textarea"
       :autosize="{ minRows: 5, maxRows: 25 }"
-      placeholder="Enter HiveQL"
+      :placeholder=defaultHiveQL
       v-model="hiveQL"
-      :disabled="disableHiveQL"
     >
     </el-input>
 
     <div class="detect">
-      <el-button type="primary" v-on:click="detect">Detect</el-button>
+      <el-button type="primary" style="border-color: rgb(45 123 199); background-color: rgb(45 123 199)" v-on:click="detect">Detect</el-button>
     </div>
-    <div style="clear: right" v-if="isStart">
-      <el-row style="flex-direction: row; clear: right">
-        <el-col :span="24">
-          <el-card class="box-card">
-            <div slot="header" class="clearfix">
-              <span>Detect Result</span>
-            </div>
-            <el-table
-              v-loading="fixLoading"
-              element-loading-text="Detecting, please wait..."
-              element-loading-spinner="el-icon-loading"
-              element-loading-background="#606266"
-              :data="fixSuggestions"
-              style="width: 100%"
-            >
-              <el-table-column prop="id" label="ID" width="80">
-              </el-table-column>
-              <el-table-column prop="suggestion" label="Anti-Pattern" >
-              </el-table-column>
-            </el-table>
 
-            <div
-              v-if="isGetJoinResult"
-              v-loading="joinLoading"
-              element-loading-text="Checking data skew, this may cost 60 secs..."
-              element-loading-spinner="el-icon-loading"
-              element-loading-background="#606266"
-              class="text"
-            >
+    <div style="clear: right">
+      <el-row style="flex-direction: row; clear: right">
+        <el-card class="box-card" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>Detect Result</span>
+          </div>
+          <el-table
+            v-loading="fixLoading"
+            element-loading-text="Detecting, please wait..."
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="#606266"
+            :data="fixSuggestions"
+            style="width: 100%"
+          >
+            <el-table-column prop="id" label="ID" width="80">
+            </el-table-column>
+            <el-table-column prop="suggestion" label="Anti-Pattern" >
+            </el-table-column>
+          </el-table>
+
+          <div
+            v-if="isGetJoinResult"
+            v-loading="joinLoading"
+            element-loading-text="Checking data skew, this may cost 60 secs..."
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="#606266"
+            class="text"
+          >
             <br>
-              Data skew check：{{ dataImbalancedSuggest }}
+            Data skew check：{{ dataImbalancedSuggest }}
             <br>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="24" style="margin-top: 10px">
-          <el-card class="box-card">
-            <div slot="header" class="clearfix">
-              <span>Fix Suggestions</span>
-            </div>
-            <div
-              v-if="isGetFixResult"
-              v-loading="fixLoading"
-              element-loading-text="Fixing, please wait..."
-              element-loading-spinner="el-icon-loading"
-              element-loading-background="#606266"
-              class="text"
-            >
-              <br>
-              Fixed HiveQL：{{ fixedHiveql }}
-              <br>
-            </div>
-            <div
-              v-if="isGetJoinResult"
-              v-loading="joinLoading"
-              element-loading-text="Recommending reduce number, this may cost 60 secs..."
-              element-loading-spinner="el-icon-loading"
-              element-loading-background="#606266"
-              class="text"
-            >
-              <br>
-              {{ recommendReduceNum }}
-              <br>
-            </div>
-          </el-card>
-        </el-col>
+          </div>
+        </el-card>
+
+        <el-card class="box-card" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>Fix Suggestions</span>
+          </div>
+          <div
+            v-if="isGetFixResult"
+            v-loading="fixLoading"
+            element-loading-text="Fixing, please wait..."
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="#606266"
+            class="text"
+          >
+            <br>
+            Fixed HiveQL：{{ fixedHiveql }}
+            <br>
+          </div>
+          <div
+            v-if="isGetJoinResult"
+            v-loading="joinLoading"
+            element-loading-text="Recommending reduce number, this may cost 60 secs..."
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="#606266"
+            class="text"
+          >
+            <br>
+            {{ recommendReduceNum }}
+            <br>
+          </div>
+        </el-card>
       </el-row>
     </div>
   </div>
@@ -92,7 +90,8 @@ export default {
   components: { Header, NavMenu },
   data() {
     return {
-      hiveQL: "",
+      hiveQL: "select t1.name,avg(t1.score),t1.age from t1 group by t1.name;",
+      defaultHiveQL: "select t1.name,avg(t1.score),t1.age from t1 group by t1.name;",
       fixedHiveql: "",
       dataImbalancedSuggest: "",
       recommendReduceNum:"",
@@ -102,11 +101,9 @@ export default {
         //   suggestion: "test",
         // }
        ],
-      isStart: false,
       isGetFixResult: false,
-      disableHiveQL: false,
       isGetJoinResult: false,
-      fixLoading: true,
+      fixLoading: false,
       joinLoading: true,
       api1url: this.common.api1url,
       api2url: this.common.api2url,
@@ -120,7 +117,6 @@ export default {
     detect() {
       var _this = this; //save this
       // clear all history detection
-      _this.isStart = false;
       _this.isGetFixResult = false;
       _this.isGetJoinResult = false;
       _this.fixLoading = true;
@@ -140,7 +136,6 @@ export default {
         })
         .then(function (response) {
           // Request returned successfully
-          _this.isStart = true;
           _this.fixLoading = false ;
           console.log(response.data); // Print the requested data
           _this.fixedHiveql = response.data.fixedHiveql;
@@ -201,10 +196,6 @@ export default {
   margin-bottom:10px;
   font-size: 14px;
   color: #606266;
-}
-
-.item {
-  margin-bottom: 18px;
 }
 
 .clearfix:before,

@@ -1,12 +1,12 @@
 module.exports = [{
-    name: 'Anti-Pattern',
+    name: 'Detect and Fix',
     id: 'detectAndFix',
     class: 'el-icon-location',
     sub: [{
-        name: 'Detect and Fix',
+        name: 'HiveQL AP',
         componentName: 'detect'
     },{
-      name: 'Configuration Check',
+      name: 'Configuration AP',
       componentName: 'configCheck'
     }]
 },{
@@ -14,9 +14,6 @@ module.exports = [{
     id: 'configuration',
     class: 'el-icon-setting',
     sub: [{
-        name:'View Configuration',
-        componentName: 'view'
-    },{
         name: 'Set Configuration',
         componentName: 'set'
     }]

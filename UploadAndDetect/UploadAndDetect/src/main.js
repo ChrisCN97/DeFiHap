@@ -6,10 +6,11 @@ import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
 import common from './components/common'
+import locale from 'element-ui/lib/locale/lang/en'
 
 var axios = require('axios')
 Vue.config.productionTip = false
-Vue.use(ElementUI)
+Vue.use(ElementUI, { locale })
 // Quote axios and set the base URL
 // axios.default.baseURL = 'https://localhost:8088'
 // Bind API methods to the global

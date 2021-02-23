@@ -7,7 +7,7 @@
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"
-          unique-opened
+          :default-openeds="opens"
           router
           background-color="#545c64"
           text-color="#fff"
@@ -34,7 +34,8 @@ import menu from '@/config/menu-config'
 export default {
     data(){
         return {
-            menu:menu
+          menu:menu,
+          opens: ["detectAndFix","configuration"]
         }
     },
   methods: {
