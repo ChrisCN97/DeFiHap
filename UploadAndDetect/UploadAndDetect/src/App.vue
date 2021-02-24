@@ -1,15 +1,15 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header class="header">
+      <el-header class="header" height="70px">
         <vheader/>
       </el-header>
       <el-container :style="defaultHeight">
-        <el-aside width="200px">
+        <el-aside width="220px">
           <navmenu></navmenu>
-          </el-aside>
-      <el-main>
-        <router-view></router-view>
+        </el-aside>
+        <el-main>
+          <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -53,12 +53,15 @@ created() {
 
 
 <style >
-.html{
-  height: 100%;
-}
 .header {
   background-color: #2970b6;
   color: #fff;
-  line-height: 60px;
+  line-height: 33px;
 }
+html,body,#app,.el-container{
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
 </style>
