@@ -1,10 +1,17 @@
 <template>
-  <div style="padding: 0 40px">
-    <h1>HiveQL Anti-Patterns Detecting and Fixing</h1>
+  <div style="padding: 0 100px">
+    <el-alert
+      :title=instrctionDescription
+      type="info"
+      show-icon
+      style="white-space: pre-wrap;">
+    </el-alert>
+
+    <h1 style="margin-top: 40px">Please Enter the HiveQL Statement Below</h1>
 
     <el-input
       type="textarea"
-      :autosize="{ minRows: 5, maxRows: 25 }"
+      :autosize="{ minRows: 3, maxRows: 25 }"
       :placeholder=defaultHiveQL
       v-model="hiveQL"
     >
@@ -15,18 +22,19 @@
     </div>
 
     <div style="clear: right">
-      <el-row style="flex-direction: row; clear: right">
-        <el-card class="box-card" shadow="never">
+      <el-row>
+        <el-card class="box-card" shadow="never" style="width: 100%">
           <div slot="header" class="clearfix">
-            <span>Detect Result</span>
+            <span>Detecting Result</span>
           </div>
           <el-table
+            v-if="isGetFixResult"
             v-loading="fixLoading"
             element-loading-text="Detecting, please wait..."
             element-loading-spinner="el-icon-loading"
             element-loading-background="#606266"
             :data="fixSuggestions"
-            style="width: 100%"
+            style="width: 100%; margin-top: -10px"
           >
             <el-table-column prop="id" label="ID" width="80">
             </el-table-column>
@@ -48,9 +56,9 @@
           </div>
         </el-card>
 
-        <el-card class="box-card" shadow="never">
+        <el-card class="box-card" shadow="never" style="width: 100%; margin-top: 10px">
           <div slot="header" class="clearfix">
-            <span>Fix Suggestions</span>
+            <span>Fix Suggestion</span>
           </div>
           <div
             v-if="isGetFixResult"
@@ -60,9 +68,7 @@
             element-loading-background="#606266"
             class="text"
           >
-            <br>
             Fixed HiveQL：{{ fixedHiveql }}
-            <br>
           </div>
           <div
             v-if="isGetJoinResult"
@@ -77,6 +83,33 @@
             <br>
           </div>
         </el-card>
+
+        <el-card class="box-card" shadow="never" style="width: 100%">
+          <div slot="header" class="clearfix">
+            <span>Configuration Check</span>
+          </div>
+          <el-button
+            type="primary"
+            style="border-color: rgb(45 123 199); background-color: rgb(45 123 199)"
+            v-on:click="detect"
+            v-if="!configFixLoading">
+              Configuration Check
+          </el-button>
+          <el-table
+            v-if="isGetFixResult"
+            v-loading="configFixLoading"
+            element-loading-text="Checking, please wait..."
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="#606266"
+            :data="configFixSuggestions"
+            style="width: 100%; margin-top: -10px"
+          >
+            <el-table-column prop="id" label="ID" width="80">
+            </el-table-column>
+            <el-table-column prop="suggestion" label="Anti-Pattern" >
+            </el-table-column>
+          </el-table>
+        </el-card>
       </el-row>
     </div>
   </div>
@@ -90,6 +123,8 @@ export default {
   components: { Header, NavMenu },
   data() {
     return {
+      instrctionDescription: "You can use HAPDF to detect and fix anti-patterns hidden in HiveQL statement.\n" +
+        "After you input a Hive statement, the detecting result and fix suggestion will be showed",
       hiveQL: "select t1.name,avg(t1.score),t1.age from t1 group by t1.name;",
       defaultHiveQL: "select t1.name,avg(t1.score),t1.age from t1 group by t1.name;",
       fixedHiveql: "",
@@ -101,10 +136,13 @@ export default {
         //   suggestion: "test",
         // }
        ],
+      configFixSuggestions: [],
       isGetFixResult: false,
       isGetJoinResult: false,
+      isGetConfigResult: false,
       fixLoading: false,
       joinLoading: true,
+      configFixLoading: true,
       api1url: this.common.api1url,
       api2url: this.common.api2url,
       t1_name: " ",
@@ -180,7 +218,27 @@ export default {
           _this.dataImbalancedSuggest = "Data skew does not exist.";
         }
       });
-    }
+    },
+    configDetect() {
+      var _this = this;
+      _this.isGetConfigResult = false;
+      _this.configFixLoading = true;
+      _this.configFixSuggestions = [];
+      _this.$axios({
+          // Create interface
+          method: "get", // Request type is get
+          url: _this.api1url + "/configCheck", // Requested interface address
+        })
+        .then(function (response) {
+          // Request returned successfully
+          for(var i=0;i<response.data.length;i++){
+            console.log(response.data[i]);
+            _this.configFixSuggestions.push({"id":i+1,"suggestion":response.data[i]});
+          }
+          _this.getFixLoading = false;
+          _this.isGetConfigResult = true;
+        });
+    },
   },
 };
 </script>
