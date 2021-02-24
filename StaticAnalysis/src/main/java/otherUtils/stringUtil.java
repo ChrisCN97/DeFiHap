@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class stringUtil {
     public static String proProcessing(String s){
-        return s.replace(";", "").replace("\n", " ");
+        return s.replaceAll("--.*\n?", " ").replace(";", "").replace("\n", " ");
     }
     
     public static String join2innerJoin(String sql) throws Exception {

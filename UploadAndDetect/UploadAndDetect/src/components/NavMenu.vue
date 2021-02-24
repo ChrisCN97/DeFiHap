@@ -7,34 +7,33 @@
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"
-          :default-openeds="opens"
           router
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
-          style="height: 100%"
+          style="height: 100%;"
         >
-          <el-submenu v-for="item in menu" :index="item.id" :key="item.id">
-            <template slot="title">
-                <span v-text="item.name"></span>
-                <i class="item.class"></i>
-            </template>
-            <el-menu-item-group class="over-hide" v-for="sub in item.sub" :key="sub.componentName">
-                <el-menu-item :index="sub.componentName" v-text="sub.name">
-                </el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
+          <el-menu-item index="detect" style="margin-top: 15px">
+            <i class="el-icon-s-order"></i>
+            <span slot="title">Detect and Fix</span>
+          </el-menu-item>
+          <el-menu-item @click="open">
+            <i class="el-icon-setting"></i>
+            <span slot="title">Configuration</span>
+          </el-menu-item>
+          <el-menu-item index="about">
+            <i class="el-icon-info"></i>
+            <span slot="title">About</span>
+          </el-menu-item>
         </el-menu>
       </el-col>
     </el-row>
   </div>
 </template>
 <script>
-import menu from '@/config/menu-config'
 export default {
     data(){
         return {
-          menu:menu,
           opens: ["detectAndFix","configuration"]
         }
     },
@@ -44,6 +43,13 @@ export default {
     },
     handleClose(key, keyPath) {
       console.log(key, keyPath);
+    },
+    open() {
+      this.$alert('This is a demo version running in private hive environment, ' +
+        'you may not change the configuration for safety reasons.\n' +
+        'Please download the source code and deploy it for full function.', 'Warning', {
+        confirmButtonText: 'OK'
+      });
     },
   },
 };

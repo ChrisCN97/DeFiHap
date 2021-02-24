@@ -1,8 +1,9 @@
 <template>
-  <div style="padding: 0 100px">
+  <div>
     <el-alert
-      :title=instrctionDescription
+      title="Tips"
       type="info"
+      :description=instrctionDescription
       show-icon
       style="white-space: pre-wrap;">
     </el-alert>
@@ -12,7 +13,6 @@
     <el-input
       type="textarea"
       :autosize="{ minRows: 3, maxRows: 25 }"
-      :placeholder=defaultHiveQL
       v-model="hiveQL"
     >
     </el-input>
@@ -28,7 +28,7 @@
             <span>Detecting Result</span>
           </div>
           <el-table
-            v-if="isGetFixResult"
+            v-if="isGetDetectResult"
             v-loading="fixLoading"
             element-loading-text="Detecting, please wait..."
             element-loading-spinner="el-icon-loading"
@@ -41,6 +41,8 @@
             <el-table-column prop="suggestion" label="Anti-Pattern" >
             </el-table-column>
           </el-table>
+
+          <div v-if="isCorrect" class="text">This HiveQL is correct.</div>
 
           <div
             v-if="isGetJoinResult"
@@ -84,19 +86,19 @@
           </div>
         </el-card>
 
-        <el-card class="box-card" shadow="never" style="width: 100%">
+        <el-card class="box-card" shadow="never" style="width: 100%; margin-top: 10px">
           <div slot="header" class="clearfix">
             <span>Configuration Check</span>
           </div>
           <el-button
             type="primary"
             style="border-color: rgb(45 123 199); background-color: rgb(45 123 199)"
-            v-on:click="detect"
-            v-if="!configFixLoading">
+            v-on:click="configDetect"
+            v-if="!configFixLoading && !isGetConfigResult">
               Configuration Check
           </el-button>
           <el-table
-            v-if="isGetFixResult"
+            v-if="isGetConfigResult"
             v-loading="configFixLoading"
             element-loading-text="Checking, please wait..."
             element-loading-spinner="el-icon-loading"
@@ -109,6 +111,7 @@
             <el-table-column prop="suggestion" label="Anti-Pattern" >
             </el-table-column>
           </el-table>
+          <div v-if="isConfigCorrect" class="text">The configuration does not contain recorded anti-patterns.</div>
         </el-card>
       </el-row>
     </div>
@@ -123,13 +126,13 @@ export default {
   components: { Header, NavMenu },
   data() {
     return {
-      instrctionDescription: "You can use HAPDF to detect and fix anti-patterns hidden in HiveQL statement.\n" +
-        "After you input a Hive statement, the detecting result and fix suggestion will be showed",
-      hiveQL: "select t1.name,avg(t1.score),t1.age from t1 group by t1.name;",
-      defaultHiveQL: "select t1.name,avg(t1.score),t1.age from t1 group by t1.name;",
+      instrctionDescription: "You can use HAPDF to detect and fix anti-patterns hidden in HiveQL statement. " +
+        "After you input a Hive statement, the detecting result and fix suggestion will be showed. " +
+        "You can also click \"Configuration Check\" to find anti-patterns in your hive configuration.",
+      hiveQL: "select t1.name,avg(t1.score),t1.age from t1 group by t1.name; -- example HiveQL statement",
       fixedHiveql: "",
       dataImbalancedSuggest: "",
-      recommendReduceNum:"",
+      recommendReduceNum: "",
       fixSuggestions:[
         // {
         //   id: "-1",
@@ -137,12 +140,15 @@ export default {
         // }
        ],
       configFixSuggestions: [],
+      isGetDetectResult: false,
       isGetFixResult: false,
       isGetJoinResult: false,
       isGetConfigResult: false,
+      isCorrect: false,
+      isConfigCorrect: false,
       fixLoading: false,
       joinLoading: true,
-      configFixLoading: true,
+      configFixLoading: false,
       api1url: this.common.api1url,
       api2url: this.common.api2url,
       t1_name: " ",
@@ -157,6 +163,8 @@ export default {
       // clear all history detection
       _this.isGetFixResult = false;
       _this.isGetJoinResult = false;
+      _this.isGetDetectResult = false;
+      _this.isCorrect = false;
       _this.fixLoading = true;
       _this.joinLoading = true;
       _this.fixedHiveql = "";
@@ -180,6 +188,11 @@ export default {
           for(var i=0;i<response.data.fixedSuggestions.length;i++){
             console.log(response.data.fixedSuggestions[i]);
             _this.fixSuggestions.push({"id":i+1,"suggestion":response.data.fixedSuggestions[i]});
+          }
+          if(response.data.fixedSuggestions[0]==="Correct HQL."){
+            _this.isCorrect = true;
+          }else{
+            _this.isGetDetectResult = true;
           }
           if (_this.fixedHiveql != null && _this.fixedHiveql !== ""){
             _this.isGetFixResult = true;
@@ -223,6 +236,7 @@ export default {
       var _this = this;
       _this.isGetConfigResult = false;
       _this.configFixLoading = true;
+      _this.isConfigCorrect = false;
       _this.configFixSuggestions = [];
       _this.$axios({
           // Create interface
@@ -235,8 +249,12 @@ export default {
             console.log(response.data[i]);
             _this.configFixSuggestions.push({"id":i+1,"suggestion":response.data[i]});
           }
-          _this.getFixLoading = false;
-          _this.isGetConfigResult = true;
+          _this.configFixLoading = false;
+          if(response.data.length===0){
+            _this.isConfigCorrect = true;
+          }else{
+            _this.isGetConfigResult = true;
+          }
         });
     },
   },
