@@ -104,7 +104,20 @@ public class TestCase {
                 {{""}, {"13"}},
                 {{"123"}, {"13"}},
                 {{"alalala"}, {"13"}},
-                {{"select t1.a from t2 where t3.b = t4.b"}, {"13"}}
+                {{"select t1.a from t2 where t3.b = t4.b"}, {"13"}},
+                {{"SELECT dealer, make, type, COUNT(*) AS frequency FROM sales\n" +
+                        "WHERE day > 0 AND dealer LIKE 'Xyz' GROUP BY make, type\n" +
+                        "ORDER BY frequency DESC LIMIT 5"},{"4","7"}},
+                {{"select \n" +
+                        "* \n" +
+                        "from\n" +
+                        "(\n" +
+                        "    select max(b) as max_b\n" +
+                        "    from\n" +
+                        "    t1\n" +
+                        "    group by a\n" +
+                        ") t2\n" +
+                        "join t1 on t1.max_b = t2.b"},{"3"}}
         };
         HashMap<String, String> apMap = new HashMap<String, String>();
         APDB apDB = new APDB();
