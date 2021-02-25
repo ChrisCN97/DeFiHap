@@ -119,11 +119,11 @@ public class MergedTest {
 //        String s = "12345";
 //        String s = "alalala";
 
-//        astCheck(s);
+        astCheck(s);
 
 //        System.out.println(tree.toStringTree(parser));
 
         // Configuration detection
-        configCheck();
+//        configCheck();
     }
 }

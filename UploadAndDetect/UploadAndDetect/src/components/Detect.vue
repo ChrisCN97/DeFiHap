@@ -27,6 +27,11 @@
           <div slot="header" class="clearfix">
             <span>Detecting Result</span>
           </div>
+          <el-alert
+            title="Detecting result will be shown here."
+            type="info"
+            v-if="!isGetDetectResult && !fixLoading">
+          </el-alert>
           <el-table
             v-if="isGetDetectResult"
             v-loading="fixLoading"
@@ -62,6 +67,11 @@
           <div slot="header" class="clearfix">
             <span>Fix Suggestion</span>
           </div>
+          <el-alert
+            title="Fix suggestion will be shown here."
+            type="info"
+            v-if="!isGetFixResult && !fixLoading">
+          </el-alert>
           <div
             v-if="isGetFixResult"
             v-loading="fixLoading"
@@ -90,13 +100,17 @@
           <div slot="header" class="clearfix">
             <span>Configuration Check</span>
           </div>
-          <el-button
-            type="primary"
-            style="border-color: rgb(45 123 199); background-color: rgb(45 123 199)"
-            v-on:click="configDetect"
-            v-if="!configFixLoading && !isGetConfigResult">
-              Configuration Check
-          </el-button>
+
+          <div style="text-align: center;">
+            <el-button
+              type="primary"
+              style="border-color: rgb(45 123 199); background-color: rgb(45 123 199);"
+              v-on:click="configDetect"
+              v-if="!configFixLoading && !isGetConfigResult">
+                Configuration Check
+            </el-button>
+          </div>
+
           <el-table
             v-if="isGetConfigResult"
             v-loading="configFixLoading"
@@ -263,7 +277,7 @@ export default {
 
 <style scoped>
 .detect {
-  float: right;
+  text-align: center;
   margin-top: 10px;
   margin-bottom: 10px;
 }

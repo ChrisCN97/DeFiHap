@@ -17,6 +17,10 @@
             <i class="el-icon-s-order"></i>
             <span slot="title">Detect and Fix</span>
           </el-menu-item>
+          <el-menu-item index="dic">
+            <i class="el-icon-notebook-1"></i>
+            <span slot="title">AP Dictionary</span>
+          </el-menu-item>
           <el-menu-item @click="open">
             <i class="el-icon-setting"></i>
             <span slot="title">Configuration</span>

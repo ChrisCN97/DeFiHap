@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import SetConfig from '@/components/SetConfig'
 import Detect from '@/components/Detect'
 import About from '@/components/About'
+import APDB from '@/components/APDB'
 
 Vue.use(Router)
 
@@ -16,6 +17,11 @@ export default new Router({
       path:'/detect',
       name: 'Detect',
       component: Detect
+    },
+    {
+      path:'/dic',
+      name:'AP Dictionary',
+      component: APDB
     },
     {
       path:'/set',
