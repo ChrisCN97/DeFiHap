@@ -10,7 +10,7 @@ statement into an abstract syntax tree (AST), then it traverses the AST to detec
 rules. In the fix phase, HAPDF constructs the HiveQL statement template according to the predefined statement generating 
 gramma and replaces the wrong syntax or semantics with the correct ones based on the detection result.
 
-You can try it at http://202.120.40.28:50012/#/detect
+You can try it at http://202.120.40.28:50012
 
 ## Project Structure
 There are three main component in this project:

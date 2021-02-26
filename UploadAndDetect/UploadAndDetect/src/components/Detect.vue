@@ -68,7 +68,7 @@
             <span>Fix Suggestion</span>
           </div>
           <el-alert
-            title="Fix suggestion will be shown here."
+            title="Part of APs can be fixed, and the fix suggestion will be shown here."
             type="info"
             v-if="!isGetFixResult && !fixLoading">
           </el-alert>
@@ -147,13 +147,8 @@ export default {
       fixedHiveql: "",
       dataImbalancedSuggest: "",
       recommendReduceNum: "",
-      fixSuggestions:[
-        // {
-        //   id: "-1",
-        //   suggestion: "test",
-        // }
-       ],
-      configFixSuggestions: [],
+      fixSuggestions: null,
+      configFixSuggestions: null,
       isGetDetectResult: false,
       isGetFixResult: false,
       isGetJoinResult: false,
@@ -171,8 +166,37 @@ export default {
       t2_key: " ",
     };
   },
+  mounted: function (){
+    this.hiveQL = this.$store.getters.getHiveQL;
+    this.fixedHiveql = this.$store.getters.getFixedHiveql;
+    this.dataImbalancedSuggest = this.$store.getters.getDataImbalancedSuggest;
+    this.recommendReduceNum = this.$store.getters.getRecommendReduceNum;
+    this.fixSuggestions = this.$store.getters.getFixSuggestions;
+    this.configFixSuggestions = this.$store.getters.getConfigFixSuggestions;
+    if(this.fixSuggestions!=null){
+      if(this.fixSuggestions[0]==="Correct HQL."){
+        this.isCorrect = true;
+      }else{
+        this.isGetDetectResult = true;
+      }
+    }
+    if (this.fixedHiveql != null && this.fixedHiveql !== ""){
+      this.isGetFixResult = true;
+    }
+    if(this.dataImbalancedSuggest === ""){
+      this.dataImbalancedSuggest = "Data skew does not exist.";
+    }
+    if(this.configFixSuggestions!=null){
+      if(this.configFixSuggestions.length===0){
+        this.isConfigCorrect = true;
+      }else{
+        this.isGetConfigResult = true;
+      }
+    }
+  },
   methods: {
     detect() {
+      this.$store.commit('setHiveQL', this.hiveQL);
       var _this = this; //save this
       // clear all history detection
       _this.isGetFixResult = false;
@@ -199,15 +223,16 @@ export default {
           _this.fixLoading = false ;
           console.log(response.data); // Print the requested data
           _this.fixedHiveql = response.data.fixedHiveql;
+          _this.$store.commit('setFixedHiveql', _this.fixedHiveql);
           for(var i=0;i<response.data.fixedSuggestions.length;i++){
             console.log(response.data.fixedSuggestions[i]);
             _this.fixSuggestions.push({"id":i+1,"suggestion":response.data.fixedSuggestions[i]});
           }
+          _this.$store.commit('setFixSuggestions', _this.fixSuggestions);
           if(response.data.fixedSuggestions[0]==="Correct HQL."){
             _this.isCorrect = true;
-          }else{
-            _this.isGetDetectResult = true;
           }
+          _this.isGetDetectResult = true;
           if (_this.fixedHiveql != null && _this.fixedHiveql !== ""){
             _this.isGetFixResult = true;
           }
@@ -240,7 +265,9 @@ export default {
         _this.joinLoading = false;
         console.log(response.data); // Print the requested data
         _this.dataImbalancedSuggest = response.data.dataImbalancedSuggest;
+        _this.$store.commit('setDataImbalancedSuggest', _this.dataImbalancedSuggest);
         _this.recommendReduceNum = response.data.recommendReduceNum;
+        _this.$store.commit('setRecommendReduceNum', _this.recommendReduceNum);
         if(_this.dataImbalancedSuggest === ""){
           _this.dataImbalancedSuggest = "Data skew does not exist.";
         }
@@ -264,6 +291,7 @@ export default {
             _this.configFixSuggestions.push({"id":i+1,"suggestion":response.data[i]});
           }
           _this.configFixLoading = false;
+          _this.$store.commit('setConfigFixSuggestions', _this.configFixSuggestions);
           if(response.data.length===0){
             _this.isConfigCorrect = true;
           }else{

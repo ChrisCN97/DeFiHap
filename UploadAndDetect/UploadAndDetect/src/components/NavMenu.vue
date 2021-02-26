@@ -13,11 +13,11 @@
           active-text-color="#ffd04b"
           style="height: 100%;"
         >
-          <el-menu-item index="detect" style="margin-top: 15px">
+          <el-menu-item index="/detect" style="margin-top: 15px">
             <i class="el-icon-s-order"></i>
             <span slot="title">Detect and Fix</span>
           </el-menu-item>
-          <el-menu-item index="dic">
+          <el-menu-item index="/dic">
             <i class="el-icon-notebook-1"></i>
             <span slot="title">AP Dictionary</span>
           </el-menu-item>
@@ -25,7 +25,7 @@
             <i class="el-icon-setting"></i>
             <span slot="title">Configuration</span>
           </el-menu-item>
-          <el-menu-item index="about">
+          <el-menu-item index="/about">
             <i class="el-icon-info"></i>
             <span slot="title">About</span>
           </el-menu-item>
