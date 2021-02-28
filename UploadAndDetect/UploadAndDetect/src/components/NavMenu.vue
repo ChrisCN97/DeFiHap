@@ -3,7 +3,7 @@
     <el-row class="tac" style="height: 100%">
       <el-col :span="24" style="height: 100%">
         <el-menu
-          default-active="2"
+          :default-active="$route.path"
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"
@@ -38,7 +38,7 @@
 export default {
     data(){
         return {
-          opens: ["detectAndFix","configuration"]
+
         }
     },
   methods: {
@@ -50,7 +50,7 @@ export default {
     },
     open() {
       this.$alert('This is a demo version running in private hive environment, ' +
-        'you may not change the configuration for safety reasons.\n' +
+        'you shall not change the configuration for safety reasons.\n' +
         'Please download the source code and deploy it for full function.', 'Warning', {
         confirmButtonText: 'OK'
       });

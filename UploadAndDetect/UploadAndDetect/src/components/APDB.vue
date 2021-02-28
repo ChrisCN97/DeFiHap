@@ -225,7 +225,7 @@ export default {
       },{
         info: "Configuration Anti-pattern",
         name: "Disabled Column Pruner",
-        des: "Column pruner is not enabled.",
+        des: "Enable column pruner to make sure only read the columns required by the query, and ignore other columns.",
         code: {
           apCode: "hive.optimize.cp=false",
           fixedCode: "hive.optimize.cp=true",
@@ -234,7 +234,7 @@ export default {
       },{
         info: "Configuration Anti-pattern",
         name: "Disabled Partition Pruner",
-        des: "Partition pruner is not enabled.",
+        des: "Partition pruner takes advantage of partition query feature.",
         code: {
           apCode: "hive.optimize.pruner=false",
           fixedCode: "hive.optimize.pruner=true",
@@ -243,7 +243,7 @@ export default {
       },{
         info: "Configuration Anti-pattern",
         name: "Disabled Output Compression",
-        des: "Output compression configuration is not enabled.",
+        des: "Output compression can improve hadoop performance in the field of I/O.",
         code: {
           apCode: "mapred.compress.map.output=false",
           fixedCode: "mapred.compress.map.output=true",
@@ -252,7 +252,7 @@ export default {
       },{
         info: "Configuration Anti-pattern",
         name: "Disabled Parallelization",
-        des: "Parallelization is not enabled.",
+        des: "Parallelization let multiple jobs run at the same time.",
         code: {
           apCode: "set hive.exec.parallel=false;\nset hive.exec.parallel=false;",
           fixedCode: "set hive.exec.parallel=true;\nset hive.exec.parallel=true;",
@@ -261,14 +261,15 @@ export default {
       },{
         info: "Configuration Anti-pattern",
         name: "Disabled Cost Based Optimizer",
-        des: "Cost based optimizer is not enabled.",
+        des: "Cost based optimizer generates efficient execution plans by examining the tables and conditions specified " +
+          "in the query.",
         code: {
           apCode: "hive.cbo.enable=false",
           fixedCode: "hive.cbo.enable=true",
           canShow: false
         }
       },{
-        info: "Reduce Recommendation",
+        info: "Reduce Number Anti-pattern",
         name: "Unreasonable Number Of Reduce",
         des: "Set too many or too few Reduce tasks for a query may lead to long processing time and computing resources wasting." +
           "HAPDF can recommend the number of Reduce a JOIN query should occupy.",
