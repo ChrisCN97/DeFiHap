@@ -173,6 +173,10 @@ export default {
     this.recommendReduceNum = this.$store.getters.getRecommendReduceNum;
     this.fixSuggestions = this.$store.getters.getFixSuggestions;
     this.configFixSuggestions = this.$store.getters.getConfigFixSuggestions;
+    this.isGetJoinResult = this.$store.getters.getIsGetJoinResult;
+    if(this.isGetJoinResult){
+      this.joinLoading = false;
+    }
     if(this.fixSuggestions!=null){
       if(this.fixSuggestions[0]==="Correct HQL."){
         this.isCorrect = true;
@@ -250,6 +254,7 @@ export default {
     join_detect(){
       var _this = this;
       _this.isGetJoinResult = true;
+      _this.$store.commit('setIsGetJoinResult', _this.isGetJoinResult);
       _this
       .$axios({
         // create api
@@ -265,12 +270,12 @@ export default {
         _this.joinLoading = false;
         console.log(response.data); // Print the requested data
         _this.dataImbalancedSuggest = response.data.dataImbalancedSuggest;
-        _this.$store.commit('setDataImbalancedSuggest', _this.dataImbalancedSuggest);
         _this.recommendReduceNum = response.data.recommendReduceNum;
         _this.$store.commit('setRecommendReduceNum', _this.recommendReduceNum);
         if(_this.dataImbalancedSuggest === ""){
           _this.dataImbalancedSuggest = "Data skew does not exist.";
         }
+        _this.$store.commit('setDataImbalancedSuggest', _this.dataImbalancedSuggest);
       });
     },
     configDetect() {

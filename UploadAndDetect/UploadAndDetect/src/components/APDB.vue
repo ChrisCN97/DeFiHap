@@ -76,7 +76,7 @@ export default {
   data() {
     return {
       apData: [{
-        info: "Statement Anti-pattern",
+        info: "Statement Anti-Pattern (S-AP)",
         name: "Large Table In The Left",
         des: "Do not put the table with more records in the left when using JOIN. " +
           "The duplicate associated keys in large table will increase the calculation amount when " +
@@ -223,7 +223,7 @@ export default {
           canShow: true
         }
       },{
-        info: "Configuration Anti-pattern",
+        info: "Configuration Anti-Pattern (C-AP)",
         name: "Disabled Column Pruner",
         des: "Enable column pruner to make sure only read the columns required by the query, and ignore other columns.",
         code: {
@@ -307,17 +307,7 @@ export default {
           };
         } else if(rowIndex===14){
           return {
-            rowspan: 5,
-            colspan: 1
-          };
-        } else if(rowIndex<19) {
-          return {
-            rowspan: 0,
-            colspan: 0
-          };
-        } else if(rowIndex===19){
-          return {
-            rowspan: 1,
+            rowspan: 6,
             colspan: 1
           };
         } else {

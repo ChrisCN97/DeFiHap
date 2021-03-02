@@ -8,6 +8,7 @@ const state={
   recommendReduceNum: "",
   fixSuggestions:null,
   configFixSuggestions: null,
+  isGetJoinResult: false,
 };
 const getters = {
   getHiveQL(state) {
@@ -27,7 +28,10 @@ const getters = {
   },
   getConfigFixSuggestions(state) {
     return state.configFixSuggestions;
-  }
+  },
+  getIsGetJoinResult(state) {
+    return state.isGetJoinResult;
+  },
 };
 const mutations = {
   setHiveQL(state, hive){
@@ -51,7 +55,10 @@ const mutations = {
   },
   setConfigFixSuggestions(state, configFixSuggestions) {
     state.configFixSuggestions = configFixSuggestions;
-  }
+  },
+  setIsGetJoinResult(state, isGetJoinResult) {
+    state.isGetJoinResult = isGetJoinResult;
+  },
 };
 const store = new Vuex.Store({
   state,

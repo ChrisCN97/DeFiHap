@@ -9,6 +9,7 @@
           <navmenu></navmenu>
         </el-aside>
         <el-main style="padding: 0 120px; margin-top: 20px">
+<!--        <el-main>-->
           <router-view></router-view>
         </el-main>
       </el-container>
