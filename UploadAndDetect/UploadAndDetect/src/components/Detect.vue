@@ -30,7 +30,7 @@
           <el-alert
             title="Detecting result will be shown here."
             type="info"
-            v-if="!isGetDetectResult && !fixLoading">
+            v-if="!isGetDetectResult && !fixLoading && !isCorrect">
           </el-alert>
           <el-table
             v-if="isGetDetectResult"
@@ -233,10 +233,11 @@ export default {
             _this.fixSuggestions.push({"id":i+1,"suggestion":response.data.fixedSuggestions[i]});
           }
           _this.$store.commit('setFixSuggestions', _this.fixSuggestions);
+          _this.isGetDetectResult = true;
           if(response.data.fixedSuggestions[0]==="Correct HQL."){
             _this.isCorrect = true;
+            _this.isGetDetectResult = false;
           }
-          _this.isGetDetectResult = true;
           if (_this.fixedHiveql != null && _this.fixedHiveql !== ""){
             _this.isGetFixResult = true;
           }
