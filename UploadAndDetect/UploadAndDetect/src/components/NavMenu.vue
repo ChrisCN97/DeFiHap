@@ -23,7 +23,7 @@
           </el-menu-item>
           <el-menu-item @click="open">
             <i class="el-icon-setting"></i>
-            <span slot="title">Configuration</span>
+            <span slot="title">Configurations</span>
           </el-menu-item>
           <el-menu-item index="/about">
             <i class="el-icon-info"></i>

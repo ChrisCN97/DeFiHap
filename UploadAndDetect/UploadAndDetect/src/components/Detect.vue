@@ -30,11 +30,11 @@
           <el-alert
             title="Detecting result will be shown here."
             type="info"
-            v-if="!isGetDetectResult && !fixLoading && !isCorrect">
+            v-if="!isGetDRA && !isGetDRD && !DRALoading && !DRDLoading">
           </el-alert>
           <el-table
-            v-if="isGetDetectResult"
-            v-loading="fixLoading"
+            v-if="isGetDRA && !isDRACorrect"
+            v-loading="DRALoading"
             element-loading-text="Detecting, please wait..."
             element-loading-spinner="el-icon-loading"
             element-loading-background="#606266"
@@ -43,15 +43,15 @@
           >
             <el-table-column prop="id" label="ID" width="80">
             </el-table-column>
-            <el-table-column prop="suggestion" label="Anti-Pattern" >
+            <el-table-column prop="suggestion" label="Statement Anti-Pattern" >
             </el-table-column>
           </el-table>
 
-          <div v-if="isCorrect" class="text">This HiveQL is correct.</div>
+          <div v-if="isGetDRA && isDRACorrect" class="text">This HiveQL is correct.</div>
 
           <div
-            v-if="isGetJoinResult"
-            v-loading="joinLoading"
+            v-if="isGetDRD"
+            v-loading="DRDLoading"
             element-loading-text="Checking data skew, this may cost 60 secs..."
             element-loading-spinner="el-icon-loading"
             element-loading-background="#606266"
@@ -61,6 +61,23 @@
             Data skew check：{{ dataImbalancedSuggest }}
             <br>
           </div>
+
+          <el-table
+            v-if="isGetConfigResult && !isConfigCorrect"
+            v-loading="configFixLoading"
+            element-loading-text="Checking, please wait..."
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="#606266"
+            :data="configFixSuggestions"
+            style="width: 100%; "
+          >
+            <el-table-column prop="id" label="ID" width="80">
+            </el-table-column>
+            <el-table-column prop="suggestion" label="Configuration Anti-Pattern" >
+            </el-table-column>
+          </el-table>
+          <div v-if="isGetConfigResult && isConfigCorrect" class="text">The configuration does not contain recorded anti-patterns.</div>
+
         </el-card>
 
         <el-card class="box-card" shadow="never" style="width: 100%; margin-top: 10px">
@@ -68,13 +85,13 @@
             <span>Fix Suggestion</span>
           </div>
           <el-alert
-            title="Part of APs can be fixed, and the fix suggestion will be shown here."
+            title="The fix suggestion will be shown here."
             type="info"
-            v-if="!isGetFixResult && !fixLoading">
+            v-if="!isGetFS && !isGetFR && !FSLoading && !FRLoading">
           </el-alert>
           <div
-            v-if="isGetFixResult"
-            v-loading="fixLoading"
+            v-if="isGetFS"
+            v-loading="FSLoading"
             element-loading-text="Fixing, please wait..."
             element-loading-spinner="el-icon-loading"
             element-loading-background="#606266"
@@ -83,8 +100,8 @@
             Fixed HiveQL：{{ fixedHiveql }}
           </div>
           <div
-            v-if="isGetJoinResult"
-            v-loading="joinLoading"
+            v-if="isGetFR"
+            v-loading="FRLoading"
             element-loading-text="Recommending reduce number, this may cost 60 secs..."
             element-loading-spinner="el-icon-loading"
             element-loading-background="#606266"
@@ -96,37 +113,6 @@
           </div>
         </el-card>
 
-        <el-card class="box-card" shadow="never" style="width: 100%; margin-top: 10px">
-          <div slot="header" class="clearfix">
-            <span>Configuration Check</span>
-          </div>
-
-          <div style="text-align: center;">
-            <el-button
-              type="primary"
-              style="border-color: rgb(45 123 199); background-color: rgb(45 123 199);"
-              v-on:click="configDetect"
-              v-if="!configFixLoading && !isGetConfigResult">
-                Configuration Check
-            </el-button>
-          </div>
-
-          <el-table
-            v-if="isGetConfigResult"
-            v-loading="configFixLoading"
-            element-loading-text="Checking, please wait..."
-            element-loading-spinner="el-icon-loading"
-            element-loading-background="#606266"
-            :data="configFixSuggestions"
-            style="width: 100%; margin-top: -10px"
-          >
-            <el-table-column prop="id" label="ID" width="80">
-            </el-table-column>
-            <el-table-column prop="suggestion" label="Anti-Pattern" >
-            </el-table-column>
-          </el-table>
-          <div v-if="isConfigCorrect" class="text">The configuration does not contain recorded anti-patterns.</div>
-        </el-card>
       </el-row>
     </div>
   </div>
@@ -140,23 +126,25 @@ export default {
   components: { Header, NavMenu },
   data() {
     return {
-      instrctionDescription: "You can use HAPDF to detect and fix anti-patterns hidden in HiveQL statement. " +
-        "After you input a Hive statement, the detecting result and fix suggestion will be showed. " +
-        "You can also click \"Configuration Check\" to find anti-patterns in your hive configuration.",
+      instrctionDescription: "You can use this tool to detect and fix anti-patterns hidden in HiveQL statements. " +
+        "After you input a Hive statement, the detecting result and fix suggestion will be shown.",
       hiveQL: "select t1.name,avg(t1.score),t1.age from t1 group by t1.name; -- example HiveQL statement",
       fixedHiveql: "",
       dataImbalancedSuggest: "",
       recommendReduceNum: "",
       fixSuggestions: null,
       configFixSuggestions: null,
-      isGetDetectResult: false,
-      isGetFixResult: false,
-      isGetJoinResult: false,
+      isGetDRA: false,
+      isGetDRD: false,
+      DRALoading: false,
+      DRDLoading: false,
+      isDRACorrect: false,
+      isGetFS: false,
+      isGetFR: false,
+      FSLoading: false,
+      FRLoading: false,
       isGetConfigResult: false,
-      isCorrect: false,
       isConfigCorrect: false,
-      fixLoading: false,
-      joinLoading: true,
       configFixLoading: false,
       api1url: this.common.api1url,
       api2url: this.common.api2url,
@@ -173,29 +161,26 @@ export default {
     this.recommendReduceNum = this.$store.getters.getRecommendReduceNum;
     this.fixSuggestions = this.$store.getters.getFixSuggestions;
     this.configFixSuggestions = this.$store.getters.getConfigFixSuggestions;
-    this.isGetJoinResult = this.$store.getters.getIsGetJoinResult;
-    if(this.isGetJoinResult){
-      this.joinLoading = false;
-    }
-    if(this.fixSuggestions!=null){
-      if(this.fixSuggestions[0]==="Correct HQL."){
-        this.isCorrect = true;
-      }else{
-        this.isGetDetectResult = true;
+    if(this.configFixSuggestions.length>0){
+      this.isGetConfigResult = true;
+      if(this.configFixSuggestions[0]==="correct"){
+        this.isConfigCorrect = true;
       }
+    }
+    if(this.fixSuggestions.length>0){
+      this.isGetDRA = true;
+      if(this.fixSuggestions[0]==="Correct HQL."){
+        this.isDRACorrect = true;
+      }
+    }
+    if(this.dataImbalancedSuggest !== ""){
+      this.isGetDRD = true;
     }
     if (this.fixedHiveql != null && this.fixedHiveql !== ""){
-      this.isGetFixResult = true;
+      this.isGetFS = true;
     }
-    if(this.dataImbalancedSuggest === ""){
-      this.dataImbalancedSuggest = "Data skew does not exist.";
-    }
-    if(this.configFixSuggestions!=null){
-      if(this.configFixSuggestions.length===0){
-        this.isConfigCorrect = true;
-      }else{
-        this.isGetConfigResult = true;
-      }
+    if (this.recommendReduceNum !== ""){
+      this.isGetFR = true;
     }
   },
   methods: {
@@ -203,59 +188,75 @@ export default {
       this.$store.commit('setHiveQL', this.hiveQL);
       var _this = this; //save this
       // clear all history detection
-      _this.isGetFixResult = false;
-      _this.isGetJoinResult = false;
-      _this.isGetDetectResult = false;
-      _this.isCorrect = false;
-      _this.fixLoading = true;
-      _this.joinLoading = true;
+      _this.isGetDRA = true;
+      _this.isGetDRD = false;
+      _this.DRALoading = true;
+      _this.DRDLoading = false;
+      _this.isDRACorrect = false;
+      _this.isGetFS = true;
+      _this.isGetFR = false;
+      _this.FSLoading = true;
+      _this.FRLoading = false;
       _this.fixedHiveql = "";
       _this.fixSuggestions = [];
       _this.dataImbalancedSuggest = "";
       _this.recommendReduceNum = "";
-      _this
-        .$axios({
-          // Create interface
-          method: "post", // Request type is get
-          url: _this.api1url + "/astCheck", // Requested interface address
-          data: {
-            hiveql: this.hiveQL,
-          },
-        })
-        .then(function (response) {
-          // Request returned successfully
-          _this.fixLoading = false ;
-          console.log(response.data); // Print the requested data
-          _this.fixedHiveql = response.data.fixedHiveql;
-          _this.$store.commit('setFixedHiveql', _this.fixedHiveql);
-          for(var i=0;i<response.data.fixedSuggestions.length;i++){
-            console.log(response.data.fixedSuggestions[i]);
-            _this.fixSuggestions.push({"id":i+1,"suggestion":response.data.fixedSuggestions[i]});
-          }
-          _this.$store.commit('setFixSuggestions', _this.fixSuggestions);
-          _this.isGetDetectResult = true;
-          if(response.data.fixedSuggestions[0]==="Correct HQL."){
-            _this.isCorrect = true;
-            _this.isGetDetectResult = false;
-          }
-          if (_this.fixedHiveql != null && _this.fixedHiveql !== ""){
-            _this.isGetFixResult = true;
-          }
-          console.log(response.data.fixedHiveql);
-          console.log(response.data.joinParams);
-          if (response.data.joinParams){
-            _this.t1_name = response.data.joinParams[0];
-            _this.t1_key = response.data.joinParams[1];
-            _this.t2_name = response.data.joinParams[2];
-            _this.t2_key = response.data.joinParams[3];
-            _this.join_detect();
-          }
+      _this.configDetect()
+      if(this.hiveQL.replaceAll(" ", "").length===0){
+        _this.isGetDRA = false;
+        _this.isGetFS = false;
+        _this.DRALoading = false;
+        _this.FSLoading = false;
+        this.$message({
+          message: 'Please enter an effective HiveQL!',
+          type: 'warning'
         });
+      }else{
+        _this
+          .$axios({
+            // Create interface
+            method: "post", // Request type is get
+            url: _this.api1url + "/astCheck", // Requested interface address
+            data: {
+              hiveql: this.hiveQL,
+            },
+          })
+          .then(function (response) {
+            // Request returned successfully
+            console.log(response.data); // Print the requested data
+            _this.fixedHiveql = response.data.fixedHiveql;
+            _this.$store.commit('setFixedHiveql', _this.fixedHiveql);
+            for(var i=0;i<response.data.fixedSuggestions.length;i++){
+              console.log(response.data.fixedSuggestions[i]);
+              _this.fixSuggestions.push({"id":i+1,"suggestion":response.data.fixedSuggestions[i]});
+            }
+            _this.$store.commit('setFixSuggestions', _this.fixSuggestions);
+            if(response.data.fixedSuggestions[0]==="Correct HQL."){
+              _this.isDRACorrect = true;
+            }
+            if (_this.fixedHiveql == null || _this.fixedHiveql === ""){
+              _this.isGetFS = false;
+            }
+            console.log(response.data.fixedHiveql);
+            console.log(response.data.joinParams);
+            _this.DRALoading = false;
+            _this.FSLoading = false;
+            if (response.data.joinParams){
+              _this.t1_name = response.data.joinParams[0];
+              _this.t1_key = response.data.joinParams[1];
+              _this.t2_name = response.data.joinParams[2];
+              _this.t2_key = response.data.joinParams[3];
+              _this.join_detect();
+            }
+          });
+      }
     },
     join_detect(){
       var _this = this;
-      _this.isGetJoinResult = true;
-      _this.$store.commit('setIsGetJoinResult', _this.isGetJoinResult);
+      _this.isGetDRD = true;
+      _this.isGetFR = true;
+      _this.DRDLoading = true;
+      _this.FRLoading = true;
       _this
       .$axios({
         // create api
@@ -268,20 +269,26 @@ export default {
           t2_key:_this.t2_key
         }
       }).then(function(response){
-        _this.joinLoading = false;
         console.log(response.data); // Print the requested data
         _this.dataImbalancedSuggest = response.data.dataImbalancedSuggest;
-        _this.recommendReduceNum = response.data.recommendReduceNum;
-        _this.$store.commit('setRecommendReduceNum', _this.recommendReduceNum);
-        if(_this.dataImbalancedSuggest === ""){
-          _this.dataImbalancedSuggest = "Data skew does not exist.";
+        _this.recommendReduceNum = response.data.recommendReduceNum.split(": ")[1];
+        console.log(_this.recommendReduceNum);
+        if(_this.recommendReduceNum !== undefined){
+          _this.recommendReduceNum = "The desired number of reducers: "+_this.recommendReduceNum;
+          _this.$store.commit('setRecommendReduceNum', _this.recommendReduceNum);
         }
-        _this.$store.commit('setDataImbalancedSuggest', _this.dataImbalancedSuggest);
+        if(_this.dataImbalancedSuggest === "" || _this.dataImbalancedSuggest === "Tables may be empty, can not check data skew. Please check HiveQL or database connection."){
+          _this.isGetDRD = false;
+        }else{
+          _this.$store.commit('setDataImbalancedSuggest', _this.dataImbalancedSuggest);
+        }
+        _this.DRDLoading = false;
+        _this.FRLoading = false;
       });
     },
     configDetect() {
       var _this = this;
-      _this.isGetConfigResult = false;
+      _this.isGetConfigResult = true;
       _this.configFixLoading = true;
       _this.isConfigCorrect = false;
       _this.configFixSuggestions = [];
@@ -296,13 +303,14 @@ export default {
             console.log(response.data[i]);
             _this.configFixSuggestions.push({"id":i+1,"suggestion":response.data[i]});
           }
-          _this.configFixLoading = false;
-          _this.$store.commit('setConfigFixSuggestions', _this.configFixSuggestions);
           if(response.data.length===0){
             _this.isConfigCorrect = true;
+            _this.configFixSuggestions.push({"id":0,"suggestion": "correct"});
           }else{
             _this.isGetConfigResult = true;
           }
+          _this.$store.commit('setConfigFixSuggestions', _this.configFixSuggestions);
+          _this.configFixLoading = false;
         });
     },
   },
