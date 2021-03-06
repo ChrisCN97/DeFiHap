@@ -116,7 +116,7 @@ export default {
       },{
         info: "Statement Anti-pattern",
         name: "Misusing INTERVAL",
-        des: "Combining INTERVAL and DATE\\_SUB( ) for date query.",
+        des: "Combining INTERVAL and DATE_SUB( ) for date query.",
         code: {
           apCode: "select date_sub('2020-9-16', interval 10 day) from a join b on a.id = b.id;",
           fixedCode: "select date_sub('2020-9-16',10) from a inner join b on a.id=b.id",

@@ -5,6 +5,7 @@ target
 application.properties
 resources
 META-INF
+gen
 !src/main/resources/application.properties
 
 /DynamicAnalysis/MLP/kaggle-house-price/__pycache__

@@ -47,7 +47,7 @@
             </el-table-column>
           </el-table>
 
-          <div v-if="isGetDRA && isDRACorrect" class="text">This HiveQL is correct.</div>
+          <div v-if="isGetDRA && isDRACorrect" class="text">This HiveQL statement is correct.</div>
 
           <div
             v-if="isGetDRD"
@@ -163,13 +163,13 @@ export default {
     this.configFixSuggestions = this.$store.getters.getConfigFixSuggestions;
     if(this.configFixSuggestions.length>0){
       this.isGetConfigResult = true;
-      if(this.configFixSuggestions[0]==="correct"){
+      if(this.configFixSuggestions[0].suggestion==="correct"){
         this.isConfigCorrect = true;
       }
     }
     if(this.fixSuggestions.length>0){
       this.isGetDRA = true;
-      if(this.fixSuggestions[0]==="Correct HQL."){
+      if(this.fixSuggestions[0].suggestion==="Correct HQL."){
         this.isDRACorrect = true;
       }
     }
