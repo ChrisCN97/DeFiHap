@@ -215,8 +215,105 @@ export default {
         des: "Querying on a dataset with a non-uniform distribution.",
         code: {
           apCode: "select t1.name from mrtest_70kskew t1 join mrtest_70kskew t2 on t1.loc = t2.loc",
-          fixedCode: "Solve the data skew problem through preprocessing the data before querying it.",
+          fixedCode: "Solve the data skew problem through preprocessing the data before querying it,\n" +
+            "like setting hive.groupby.skewindata=true.",
           canShow: true
+        }
+      },{
+        info: "Statement Anti-pattern",
+        name: "Using String Matching",
+        des: "Using string matching in a HiveQL.",
+        code: {
+          apCode: "select count(*) from olap_b_dw_hotelorder_f where create_date_wid not regexp '\\\\d{8}'",
+          fixedCode: "Use search tools for hadoop.",
+          canShow: false
+        }
+      },{
+        info: "Statement Anti-pattern",
+        name: "THEN inconsistent with ELSE",
+        des: "The types are inconsistent between the data in THEN and ELSE.",
+        code: {
+          apCode: "SELECT  ID, \n" +
+            "        CASE WHEN col_a = 0 THEN 0\n" +
+            "        ELSE (col_b / col_a) END AS math_is_fun\n" +
+            "FROM    (/* derived query*/) AS x ;",
+          fixedCode: "SELECT  ID, \n" +
+            "        CASE WHEN col_a = 0 THEN 0.0\n" +
+            "        ELSE (col_b / col_a) END AS math_is_fun\n" +
+            "FROM    (/* derived query*/) AS x ;",
+          canShow: false
+        }
+      },{
+        info: "Statement Anti-pattern",
+        name: "No Window Function",
+        des: "Normalize column data without window function.",
+        code: {
+          apCode: "select a.ID, \n" +
+            "(((a.count1-min(a.count1))/(max(a.count1)-min(a.count1))),\n" +
+            "(((a.count2-min(a.count2))/(max(a.count2)-min(a.count2)))\n" +
+            "from table1 as a;",
+          fixedCode: "select ID, \n" +
+            "(count1-min(count1) over())/(max(count1) over()-min(count1) over()),\n" +
+            "(count2-min(count2) over())/(max(count2) over() -min(count2) over())\n" +
+            "from table1",
+          canShow: false
+        }
+      },{
+        info: "Statement Anti-pattern",
+        name: "Array Going Out of Bounds",
+        des: "Repeated fields after group by or join on cause the array to go out of bounds.",
+        code: {
+          apCode: "SELECT *\n" +
+            "FROM table_1 AS T1\n" +
+            "LEFT JOIN table_2 AS T2 ON T1.col_A = T2.col_A\n" +
+            "AND T1.col_A = T2.col_A",
+          fixedCode: "Remove duplicate fields",
+          canShow: false
+        }
+      },{
+        info: "Statement Anti-pattern",
+        name: "Misusing Quotes",
+        des: "Improper use of single and double quotes in Hive script.",
+        code: {
+          apCode: "hive -e 'select msg, count(*) as cnt from table where msg like “%abcd%” \n" +
+            "group by msg order by cnt desc ;' | sed 's/[\\t]/,/g' > table.csv",
+          fixedCode: "hive -e \"select msg, count(*) as cnt from table where msg like '%abcd%' \n" +
+            "group by msg order by cnt desc ;\" | sed 's/[\\t]/,/g' > table.csv",
+          canShow: false
+        }
+      },{
+        info: "Statement Anti-pattern",
+        name: "Too Many count(distinct)",
+        des: "Use count(distinct) in large tables frequently.",
+        code: {
+          apCode: "select count( distinct cookie )\n" +
+            "from weblogs\n" +
+            "where dt <= ${today}\n" +
+            "  and dt >= ${90daysAgo};",
+          fixedCode: "Replace it with sum...group by",
+          canShow: false
+        }
+      },{
+        info: "Statement Anti-pattern",
+        name: "JOIN with NULL",
+        des: "JOIN between large tables, one of the tables has null or 0 values, or a certain number of values is large.",
+        code: {
+          apCode: "",
+          fixedCode: "Null value does not participate in association, or \n" +
+            "turn the empty key into a string plus a random number",
+          canShow: false
+        }
+      },{
+        info: "Statement Anti-pattern",
+        name: "JOIN Different Types",
+        des: "JOIN between different data types.",
+        code: {
+          apCode: "select count( distinct cookie )\n" +
+            "from weblogs\n" +
+            "where dt <= ${today}\n" +
+            "  and dt >= ${90daysAgo};",
+          fixedCode: "Replace it with sum...group by",
+          canShow: false
         }
       },{
         info: "Configuration Anti-Pattern (C-AP)",
@@ -274,6 +371,103 @@ export default {
           fixedCode: "You can get the Reduce Recommendation by detecting it.",
           canShow: true
         }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Inappropriate Container Size",
+        des: "Set container size setting inappropriately.",
+        code: {
+          apCode: "Container size sets improperly",
+          fixedCode: "",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Improper Merge File Size",
+        des: "The merge file size is set improperly, too large or too small",
+        code: {
+          apCode: "hive.merge.size.per.task sets improperly",
+          fixedCode: "",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Failed Terminal Initialization",
+        des: "Hive started, terminal initialization failed.",
+        code: {
+          apCode: "export HADOOP_USER_CLASSPATH_FIRST=false",
+          fixedCode: "export HADOOP_USER_CLASSPATH_FIRST=true",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "ExecutorService Rejection",
+        des: "Task is rejected by executorService.",
+        code: {
+          apCode: "",
+          fixedCode: "Set hive.server2.thrift.max.worker.threads=1, hive.server2.thrift.min.worker.threads=1",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Insert without Dynamic Partition",
+        des: "Inserting the partition table without setting dynamic partition.",
+        code: {
+          apCode: "",
+          fixedCode: "Set hive.exec.dynamic.partition.mode=nonstrict",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Disabling Partial Aggregation",
+        des: "Partial aggregation function on the map side is not enabled.",
+        code: {
+          apCode: "hive.map.aggr=false",
+          fixedCode: "hive.map.aggr=true\n" +
+            "hive.groupby.mapaggr.checkinterval=100000",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Disabling Map Join",
+        des: "Small tables join large tables, automatically try map join is not enabled.",
+        code: {
+          apCode: "hive.auto.convert.join=false",
+          fixedCode: "hive.auto.convert.join=true\n" +
+            "hive.mapjoin.smalltable.filesize=25000000",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Disabling Small File Merging",
+        des: "Automatic merging of small files is not enabled, and too many small files are generated.",
+        code: {
+          apCode: "hive.map.aggr=false",
+          fixedCode: "hive.map.aggr=true\n" +
+            "hive.groupby.mapaggr.checkinterval=100000",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Inappropriate Number of Mappers",
+        des: "Setting too many or too few mappers for a JOIN operation.",
+        code: {
+          apCode: "",
+          fixedCode: "Method 1: Reduce the number of maptasks by merging small files, mainly for data sources.\n" +
+            "Method 2: Reduce the time for the MapReduce program to start and shut down the jvm process by setting the \n" +
+            "way to reuse the jvm process: (set mapred.job.reuse.jvm.num.tasks=5) means that the map task reuses the \n" +
+            "same jvm.",
+          canShow: false
+        }
+      },{
+        info: "Configuration Anti-pattern",
+        name: "Unreasonable partition settings",
+        des: "Set partition improperly.",
+        code: {
+          apCode: "",
+          fixedCode: "When the two data are relatively large, when you often filter and query according to a certain \n" +
+            "field, you need to create a partition table according to the filter field",
+          canShow: false
+        }
       }
       ],
       listIndex: 0,
@@ -291,17 +485,17 @@ export default {
       if (columnIndex === 0) {
         if (rowIndex === 0) {
           return {
-            rowspan: 14,
+            rowspan: 22,
             colspan: 1
           };
-        } else if(rowIndex<14) {
+        } else if(rowIndex<22) {
           return {
             rowspan: 0,
             colspan: 0
           };
-        } else if(rowIndex===14){
+        } else if(rowIndex===22){
           return {
-            rowspan: 6,
+            rowspan: 16,
             colspan: 1
           };
         } else {
