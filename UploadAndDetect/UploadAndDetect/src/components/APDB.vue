@@ -12,19 +12,26 @@
         <el-table-column
           prop="info"
           label="Anti-Pattern Type"
-          width="170px"
+          width="150px"
           >
         </el-table-column>
         <el-table-column
           prop="name"
           label="Anti-Pattern Name"
-          width="280px"
+          width="270px"
         >
         </el-table-column>
         <el-table-column
           prop="des"
           label="Description"
           style="word-break: keep-all;"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="impact"
+          :render-header="renderHeader"
+          width="100px"
+          align="center"
         >
         </el-table-column>
         <el-table-column
@@ -79,6 +86,7 @@ export default {
         info: "Statement Anti-Pattern (S-AP)",
         name: "Large Table on the Left",
         des: "Putting table with more records on the left of JOIN.",
+        impact: "P",
         code: {
           apCode: "-- mrtest_50 is the larger table\nselect t1.name from mrtest_50 t1 join mrtest_10 t2 on t1.city = t2.city",
           fixedCode: "select t1.name from mrtest_10 t2 join mrtest_50 t1 on t1.city = t2.city",
@@ -88,6 +96,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Greedy Selection",
         des: "Using SELECT * which could retrieve redundant result.",
+        impact: "P, M",
         code: {
           apCode: "select * from t1;",
           fixedCode: "Select target column explicitly",
@@ -97,6 +106,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Too Many Joins",
         des: "Using more than one JOIN operation.",
+        impact: "P",
         code: {
           apCode: "select t1.a from t1 join t2 on t1.b = t2.b join t3 on t1.b=t3.b join t4 on t1.b=t4.b",
           fixedCode: "Reduce JOIN through optimizing business logic",
@@ -106,6 +116,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Misusing HAVING",
         des: "Using HAVING without GROUP BY.",
+        impact: "P",
         code: {
           apCode: "select col1,col2 from \n" +
             "(select t1.col1,t1.col2,t2.col3 from t1 join t2 on t1.id = t2.id having t1.col1 >100) as t3",
@@ -117,6 +128,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Misusing INTERVAL",
         des: "Combining INTERVAL and DATE_SUB( ) for date query.",
+        impact: "E",
         code: {
           apCode: "select date_sub('2020-9-16', interval 10 day) from a join b on a.id = b.id;",
           fixedCode: "select date_sub('2020-9-16',10) from a inner join b on a.id=b.id",
@@ -126,6 +138,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "SELECT Inconsistent with GROUP BY",
         des: "Missing selected columns after GROUP BY.",
+        impact: "E",
         code: {
           apCode: "select t3.col1,t3.col2,sum(t3.col1) \n" +
             "from (select t1.col1,t2.col2 from t1 join t2 on t1.id = t2.id) as t3 group by t3.col2;",
@@ -137,6 +150,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Calculation In Predicate",
         des: "Calculating in predicates after ON or WHERE.",
+        impact: "P",
         code: {
           apCode: "select t1.col1, t2.col2 from table1 as t1 join (select t3.col3 from t3 where t3.age - 3 > 18) \n" +
             "as t2 on t1.col1  = t2.col2;",
@@ -147,6 +161,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Calling Functions In Predicate",
         des: "Calling functions in predicates after ON or WHERE.",
+        impact: "P",
         code: {
           apCode: "select t1.col1, t2.col2 from table1 as t1 join table2 as t2 on upper(t1.col1) = t2.col2;",
           fixedCode: "Optimize business logic",
@@ -154,8 +169,9 @@ export default {
         }
       },{
         info: "Statement Anti-pattern",
-        name: "No Aggregation Function",
-        des: "Lack of aggregation function in a query using GROUP BY.",
+        name: "No Group By",
+        des: "Using aggregation function without GROUP BY.",
+        impact: "E",
         code: {
           apCode: "select col1,col2 from \n" +
             "(select t1.col1,t1.col2,t2.col3 from t1 join t2 on t1.id = t2.id) as t1 group by col1,col2;",
@@ -166,6 +182,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Using ORDER BY",
         des: "Using ORDER BY instead of SORT BY.",
+        impact: "P",
         code: {
           apCode: "select t1.name,t2.age from t1 join t2 on t1.id = t2.id order by t2.age;",
           fixedCode: "Try to use SORT BY instead",
@@ -175,6 +192,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "JOIN In Subquery",
         des: "Using Join in the sub-query.",
+        impact: "P",
         code: {
           apCode: "select a.* from tbl1 a \n" +
             "inner join \n" +
@@ -195,6 +213,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Creating Duplicate Table",
         des: "Creating a table which has the same column property of another table in the database.",
+        impact: "P, M",
         code: {
           apCode: "create table mrtest_51 (name String, age int, city int)",
           fixedCode: "Optimize business logic",
@@ -204,6 +223,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Querying without Partition",
         des: "Querying on a partitioned table without using partition filter.",
+        impact: "P",
         code: {
           apCode: "select name from partitiontable;",
           fixedCode: "Use partiion search in this table.",
@@ -213,6 +233,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Data Skew",
         des: "Querying on a dataset with a non-uniform distribution.",
+        impact: "P",
         code: {
           apCode: "select t1.name from mrtest_70kskew t1 join mrtest_70kskew t2 on t1.loc = t2.loc",
           fixedCode: "Solve the data skew problem through preprocessing the data before querying it,\n" +
@@ -223,6 +244,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Using String Matching",
         des: "Using string matching in a HiveQL.",
+        impact: "P",
         code: {
           apCode: "select count(*) from olap_b_dw_hotelorder_f where create_date_wid not regexp '\\\\d{8}'",
           fixedCode: "Use search tools for hadoop.",
@@ -232,6 +254,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "THEN inconsistent with ELSE",
         des: "The types are inconsistent between the data in THEN and ELSE.",
+        impact: "E",
         code: {
           apCode: "SELECT  ID, \n" +
             "        CASE WHEN col_a = 0 THEN 0\n" +
@@ -247,6 +270,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "No Window Function",
         des: "Normalize column data without window function.",
+        impact: "E",
         code: {
           apCode: "select a.ID, \n" +
             "(((a.count1-min(a.count1))/(max(a.count1)-min(a.count1))),\n" +
@@ -262,6 +286,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Array Going Out of Bounds",
         des: "Repeated fields after group by or join on cause the array to go out of bounds.",
+        impact: "E",
         code: {
           apCode: "SELECT *\n" +
             "FROM table_1 AS T1\n" +
@@ -274,6 +299,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Misusing Quotes",
         des: "Improper use of single and double quotes in Hive script.",
+        impact: "E",
         code: {
           apCode: "hive -e 'select msg, count(*) as cnt from table where msg like “%abcd%” \n" +
             "group by msg order by cnt desc ;' | sed 's/[\\t]/,/g' > table.csv",
@@ -285,6 +311,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "Too Many count(distinct)",
         des: "Use count(distinct) in large tables frequently.",
+        impact: "P",
         code: {
           apCode: "select count( distinct cookie )\n" +
             "from weblogs\n" +
@@ -297,6 +324,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "JOIN with NULL",
         des: "JOIN between large tables, one of the tables has null or 0 values, or a certain number of values is large.",
+        impact: "P",
         code: {
           apCode: "",
           fixedCode: "Null value does not participate in association, or \n" +
@@ -307,6 +335,7 @@ export default {
         info: "Statement Anti-pattern",
         name: "JOIN Different Types",
         des: "JOIN between different data types.",
+        impact: "P",
         code: {
           apCode: "select count( distinct cookie )\n" +
             "from weblogs\n" +
@@ -317,8 +346,21 @@ export default {
         }
       },{
         info: "Configuration Anti-Pattern (C-AP)",
+        name: "Inappropriate Number of Reducers",
+        des: "Setting too many or too few reducers for a JOIN operation.",
+        impact: "P",
+        code: {
+          apCode: "Select mrtest_50.name \n" +
+            "From mrtest_50 \n" +
+            "join mrtest_10 t2 on mrtest_50.city = t2.city;",
+          fixedCode: "You can get the Reduce Recommendation by detecting it.",
+          canShow: true
+        }
+      },{
+        info: "Configuration Anti-Pattern (C-AP)",
         name: "Disabling Column Pruner",
         des: "Not enabling column pruner configuration item.",
+        impact: "P",
         code: {
           apCode: "hive.optimize.cp=false",
           fixedCode: "hive.optimize.cp=true",
@@ -328,6 +370,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Disabling Partition Pruner",
         des: "Not enabling partition pruner configuration item.",
+        impact: "P",
         code: {
           apCode: "hive.optimize.pruner=false",
           fixedCode: "hive.optimize.pruner=true",
@@ -337,6 +380,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Disabling Output Compression",
         des: "Not enabling output compression configuration item.",
+        impact: "P",
         code: {
           apCode: "mapred.compress.map.output=false",
           fixedCode: "mapred.compress.map.output=true",
@@ -346,6 +390,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Disabling Parallelization",
         des: "Not enabling parallelization configuration item.",
+        impact: "P",
         code: {
           apCode: "set hive.exec.parallel=false;\nset hive.exec.parallel=false;",
           fixedCode: "set hive.exec.parallel=true;\nset hive.exec.parallel=true;",
@@ -355,26 +400,17 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Disabling Cost based Optimizer",
         des: "Not enabling cost based optimizer (CBO) configuration item.",
+        impact: "P",
         code: {
           apCode: "hive.cbo.enable=false",
           fixedCode: "hive.cbo.enable=true",
           canShow: false
         }
       },{
-        info: "Reduce Number Anti-pattern",
-        name: "Inappropriate Number of Reducers",
-        des: "Setting too many or too few reducers for a JOIN operation.",
-        code: {
-          apCode: "Select mrtest_50.name \n" +
-            "From mrtest_50 \n" +
-            "join mrtest_10 t2 on mrtest_50.city = t2.city;",
-          fixedCode: "You can get the Reduce Recommendation by detecting it.",
-          canShow: true
-        }
-      },{
         info: "Configuration Anti-pattern",
         name: "Inappropriate Container Size",
         des: "Set container size setting inappropriately.",
+        impact: "P",
         code: {
           apCode: "Container size sets improperly",
           fixedCode: "",
@@ -384,6 +420,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Improper Merge File Size",
         des: "The merge file size is set improperly, too large or too small",
+        impact: "P",
         code: {
           apCode: "hive.merge.size.per.task sets improperly",
           fixedCode: "",
@@ -393,6 +430,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Failed Terminal Initialization",
         des: "Hive started, terminal initialization failed.",
+        impact: "E",
         code: {
           apCode: "export HADOOP_USER_CLASSPATH_FIRST=false",
           fixedCode: "export HADOOP_USER_CLASSPATH_FIRST=true",
@@ -402,6 +440,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "ExecutorService Rejection",
         des: "Task is rejected by executorService.",
+        impact: "E",
         code: {
           apCode: "",
           fixedCode: "Set hive.server2.thrift.max.worker.threads=1, hive.server2.thrift.min.worker.threads=1",
@@ -411,6 +450,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Insert without Dynamic Partition",
         des: "Inserting the partition table without setting dynamic partition.",
+        impact: "E",
         code: {
           apCode: "",
           fixedCode: "Set hive.exec.dynamic.partition.mode=nonstrict",
@@ -419,7 +459,8 @@ export default {
       },{
         info: "Configuration Anti-pattern",
         name: "Disabling Partial Aggregation",
-        des: "Partial aggregation function on the map side is not enabled.",
+        des: "Not enabling partial aggregation function on the map side.",
+        impact: "P",
         code: {
           apCode: "hive.map.aggr=false",
           fixedCode: "hive.map.aggr=true\n" +
@@ -429,7 +470,8 @@ export default {
       },{
         info: "Configuration Anti-pattern",
         name: "Disabling Map Join",
-        des: "Small tables join large tables, automatically try map join is not enabled.",
+        des: "Not enabling Map Join when small tables join large tables.",
+        impact: "P",
         code: {
           apCode: "hive.auto.convert.join=false",
           fixedCode: "hive.auto.convert.join=true\n" +
@@ -439,7 +481,8 @@ export default {
       },{
         info: "Configuration Anti-pattern",
         name: "Disabling Small File Merging",
-        des: "Automatic merging of small files is not enabled, and too many small files are generated.",
+        des: "Not enabling automatic merging of small files function.",
+        impact: "P",
         code: {
           apCode: "hive.map.aggr=false",
           fixedCode: "hive.map.aggr=true\n" +
@@ -450,6 +493,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Inappropriate Number of Mappers",
         des: "Setting too many or too few mappers for a JOIN operation.",
+        impact: "P",
         code: {
           apCode: "",
           fixedCode: "Method 1: Reduce the number of maptasks by merging small files, mainly for data sources.\n" +
@@ -462,6 +506,7 @@ export default {
         info: "Configuration Anti-pattern",
         name: "Unreasonable partition settings",
         des: "Set partition improperly.",
+        impact: "P",
         code: {
           apCode: "",
           fixedCode: "When the two data are relatively large, when you often filter and query according to a certain \n" +
@@ -481,6 +526,18 @@ export default {
     }
   },
   methods: {
+    renderHeader(h) {
+      return (
+        <div>
+          Impact &nbsp;
+          <el-tooltip class="item" effect="light"
+                      content="P: poor performance, M: low maintainability, E: program error"
+                      placement="top">
+            <i class="el-icon-question" />
+          </el-tooltip>
+        </div>
+      )
+    },
     spanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0) {
         if (rowIndex === 0) {
