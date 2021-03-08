@@ -4,9 +4,8 @@ A tool for automatically detecting and fixing HiveQL Anti-Patterns.
 ## Introduction
 ![system overview](pic/System%20Overview.png)
 
-We developDeFiHaptowards automatically detecting and fix-ingAPsin HiveQL applications. Application developers can lever-ageDeFiHapto create efficient, maintainable and accurate queriesin big data applications.
-
-The architecture of DeFiHap is shown in the figure. the workflow of DeFiHap is mainly divided into two phases: detection and fix. DeFiHap takes the HiveQL
+We develop DeFiHap towards automatically detecting and fixing APs in HiveQL applications. Application developers can leverage DeFiHap to create efficient, maintainable and accurate queries in big data applications.
+The architecture of DeFiHap is shown in the figure. DeFiHap is mainly divided into three components: detection and fix!!!!!!!!!!!. DeFiHap takes the HiveQL
 statement and Hive configurations entered by the user as input. In the detection phase, DeFiHap first converts the HiveQL 
 statement into an abstract syntax tree (AST), then it traverses the AST to detect anti-patterns based on the preset detecting 
 rules. In the fix phase, DeFiHap constructs the HiveQL statement template according to the predefined statement generating 
