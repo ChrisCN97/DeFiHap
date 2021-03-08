@@ -23,7 +23,8 @@ and check if the operation is data skewing.
 
 ## Install
 * Package two maven projects: [staticCheck](StaticAnalysis) and 
-[dynamicCheck](DynamicAnalysis/hivecheck), then deploy them.**Attention:** copy the [src](src) folder into your deploying path. Deploy python flask api [pred_api](DynamicAnalysis/MLP/ReducePredict/pred_api.py). **Note:**the model checkpoint is trained on our cluster for demostration, to support recommending number of reducers in your Hive cluster, you should replace [dataset](DynamicAnalysis/MLP/ReducePredict/all/joinMlpTrainData_L.csv) with your join logs and re-train the [MLP model](DynamicAnalysis/MLP/ReducePredict/HivePred.py).
+[dynamicCheck](DynamicAnalysis/hivecheck), then deploy them.**Attention:** copy the [src](src) folder into your deploying path. 
+* Deploy python flask api [pred_api](DynamicAnalysis/MLP/ReducePredict/pred_api.py). **Note:** the model checkpoint is trained on our cluster for demostration, to support recommending number of reducers in your Hive cluster, you should replace [dataset](DynamicAnalysis/MLP/ReducePredict/all/joinMlpTrainData_L.csv) with your join logs and re-train the [MLP model](DynamicAnalysis/MLP/ReducePredict/HivePred.py).
 * Run [client webapp](UploadAndDetect/UploadAndDetect) (a VUE frontend project) to use DeFiHap. 
 Remember to set configuration in DeFiHap->Configuration->Set-Configuration first.
 
