@@ -37,6 +37,6 @@ Remember to set configuration in DeFiHap->Configuration->Set-Configuration first
 
  Here are our evaluation results.
 
-<table style="margin:auto"><thead><tr><th><span>Function</span></th><th><span>Precision</span></th><th><span>Recall</span></th><th><span>F1</span></th></tr></thead><tbody><tr><td><span>Detecting HiveQL APs</span></td><td><span>100%</span></td><td><span>96.88%</span></td><td><span>98.42%</span></td></tr><tr><td><span>Fixing HiveQL APs</span></td><td><span>92.11%</span></td><td><span>-</span></td><td><span>-</span></td></tr><tr><td><span>Recommending the reducer number</span></td><td><span>78.57%</span></td><td><span>-</span></td><td><span>-</span></td></tr></tbody></table>
+<center><table><thead><tr><th><span>Function</span></th><th><span>Precision</span></th><th><span>Recall</span></th><th><span>F1</span></th></tr></thead><tbody><tr><td><span>Detecting HiveQL APs</span></td><td><span>100%</span></td><td><span>96.88%</span></td><td><span>98.42%</span></td></tr><tr><td><span>Fixing HiveQL APs</span></td><td><span>92.11%</span></td><td><span>-</span></td><td><span>-</span></td></tr><tr><td><span>Recommending the reducer number</span></td><td><span>78.57%</span></td><td><span>-</span></td><td><span>-</span></td></tr></tbody></table></center>
 
 
