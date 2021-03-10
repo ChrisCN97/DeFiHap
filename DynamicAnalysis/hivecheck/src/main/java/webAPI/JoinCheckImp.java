@@ -1,10 +1,8 @@
 package webAPI;
 
 import bias_check.DataImbalanceCheck;
-import bias_check.ReduceNumCheck;
 import org.springframework.web.client.RestTemplate;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
@@ -63,9 +61,8 @@ public class JoinCheckImp {
             for(int keyRecord : keyMap2.values()){
                 recordNum2 += keyRecord;
             }
-            int rncRn = ReduceNumCheck.reduceNumCheckForAPI(keyNum1, keyNum2, recordNum1, recordNum2, threshold);
             int mlpRn = Integer.parseInt(mlpReduceNum(recordNum1,keyNum1,recordNum2,keyNum2));
-            result.setRecommendReduceNum("Recommend reduce num: " + Math.max(rncRn, mlpRn));
+            result.setRecommendReduceNum("Recommend reduce num: " + mlpRn);
         }
         return result;
     }
