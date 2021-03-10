@@ -30,15 +30,17 @@ Remember to set configuration in DeFiHap->Configuration->Set-Configuration first
 
 ## Evaluation
  We evaluate DeFiHap on 110 real-world HiveQL statements collected non-duplicated HiveQL statements from StackOverflow. to quantify its capabilities in processing HiveQL APs.Three widely used metrics are selected: precision, recall, and F1.
- 
+
  The dataset contains 14 different join queries for evaluating the technique of recommending reducer settings(the recommended number is considered correct if its corresponding execution time differs from the optimal one within 2 seconds). 
- 
+
  We build Hive tables and load synthetic data for each statement in our cluster.The server of DeFiHap runs on Hive 2.3.4 with default configurations in a 3-node Hadoop cluster, and the Hive metadata is stored in MySQL.
- 
+
  Here are our evaluation results.
 
- 
-![system overview](pic/results.png#pic_center)
-
+| Function                        | Precision | Recall | F1     |
+| ------------------------------- | --------- | ------ | ------ |
+| Detecting HiveQL APs            | 100%      | 96.88% | 98.42% |
+| Fixing HiveQL APs               | 92.11%    | -      | -      |
+| Recommending the reducer number | 78.57%    | -      | -      |
 
 
