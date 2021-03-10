@@ -32,9 +32,9 @@ There are three main component in this project:
 * Run [client web interface](UploadAndDetect/UploadAndDetect) (a VUE frontend project) to use DeFiHap. Remember to set configuration in DeFiHap->Configurations->Set-Configuration first.
 
 ## Evaluation
- We evaluate DeFiHap on 110 real-world HiveQL statements collected non-duplicated HiveQL statements from Stack Overflow. To quantify its capabilities in processing HiveQL APs, three widely used metrics are selected: precision, recall, and F1.
+ We evaluate DeFiHap on 110 real-world HiveQL statements collected non-duplicated HiveQL statements from Stack Overflow, to quantify its capabilities in processing HiveQL APs. Three widely used metrics are selected: precision, recall, and F1.
  
- The dataset contains [96 statements](StaticAnalysis/src/main/java/myApplication/TestCase.java) for evaluating the technique of detecting and fixing HiveQL APs and [14 different join queries](DynamicAnalysis/MLP/ReducePredict/all/joinMlpTrainTest_L.csv) for evaluating the technique of recommending reducer settings. (The recommended number is considered correct if the difference between its corresponding execution time and the optimal one is less than 2 seconds.)
+ The dataset contains [96 HiveQL statements](StaticAnalysis/src/main/java/myApplication/TestCase.java) for evaluating the technique of detecting and fixing HiveQL APs and [14 different join queries](DynamicAnalysis/MLP/ReducePredict/all/joinMlpTrainTest_L.csv) for evaluating the technique of recommending reducer settings. (The recommended number is considered correct if the difference between its corresponding execution time and the optimal one is less than 2 seconds.)
  
  We build Hive tables and load synthetic data for each statement in our cluster. The server of DeFiHap runs on Hive 2.3.4 with default configurations in a 3-node Hadoop cluster, and the Hive metadata is stored in MySQL.
  
