@@ -1,8 +1,3 @@
-<style>
-table {
-margin: auto;
-}
-</style>
 # DeFiHap
 A tool for automatically detecting and fixing HiveQL anti-patterns. Application developers can leverage DeFiHap to create efficient, maintainable and accurate queries in big data applications.
 
@@ -49,10 +44,6 @@ There are three main component in this project:
  
  Here are our evaluation results.
 
-| Function                        | Precision | Recall | F1     |
-| ------------------------------- | --------- | ------ | ------ |
-| Detecting HiveQL APs            | 100%      | 96.88% | 98.42% |
-| Fixing HiveQL APs               | 92.11%    | -      | -      |
-| Recommending the reducer number | 78.57%    | -      | -      |
+<center><table><thead><tr><th><span>Function</span></th><th><span>Precision</span></th><th><span>Recall</span></th><th><span>F1</span></th></tr></thead><tbody><tr><td><span>Detecting HiveQL APs</span></td><td><span>100%</span></td><td><span>96.88%</span></td><td><span>98.42%</span></td></tr><tr><td><span>Fixing HiveQL APs</span></td><td><span>92.11%</span></td><td><span>-</span></td><td><span>-</span></td></tr><tr><td><span>Recommending the reducer number</span></td><td><span>78.57%</span></td><td><span>-</span></td><td><span>-</span></td></tr></tbody></table></center>
 
 
