@@ -4,42 +4,49 @@ margin: auto;
 }
 </style>
 # DeFiHap
-A tool for automatically detecting and fixing HiveQL Anti-Patterns. Application developers can leverage DeFiHap to create efficient, maintainable and accurate queries in big data applications.
+A tool for automatically detecting and fixing HiveQL anti-patterns. Application developers can leverage DeFiHap to create efficient, maintainable and accurate queries in big data applications.
 
 ## Architecture
 ![system overview](pic/System%20Overview.png) 
 
-The architecture of DeFiHap is shown in the figure. DeFiHap is mainly divided into two phases: detection and fix. DeFiHap takes the HiveQL statement and Hive configurations entered by the user as input. In the detection phase, DeFiHap first converts the HiveQL 
-statement into an abstract syntax tree (AST), then it traverses the AST to detect anti-patterns based on the preset detecting 
-rules. The fix phase is further divided into two phases: fixing HiveQL statement APs and fixing HiveQL configuration APs. When fixing HiveQL statement APs, DeFiHap uses an S-AP fix engine to fix the detected statement APs through rewriting a given HiveQL statement. Instead of generating the target statement from scratches, the S-AP fix engine constructs statement templates to revises a small part of the elements via a sequence editor. When fixing HiveQL configuration APs, DeFiHap suggests a general configuration recommendation for common configuration APs, and employs a trained MLP model to recommend the reducer number for JOIN queries.
+The architecture of DeFiHap is shown in the figure. It consis ts of three components. 
 
-You can try it at http://202.120.40.28:50012
+DeFiHap first implements a static analysis of AST, HiveQL data and  metadata to search for the latent statement and configuration anti-patterns.
+
+Then, for statement anti-patterns, DeFiHap suggests the fix through a template based rewriting technique. 
+
+And for configuration anti-patterns, DeFiHap employs a machine learning based approach to recommend the desired reducer settings for different join queries.
+
+You can try a demo version of DeFiHap on http://202.120.40.28:50012
 
 ## HiveQL Anti-Patterns
+We conduct an empirical study on the posts about HiveQL programming issues in Stack Overflow.
+
+38 HiveQL anti-patterns have been identified, which are categorized as statement and configuration anti-patterns.
+
+DeFiHap is able to detect 25 HiveQL anti-patterns and generates the fix suggestions for 17 of them, as shown in the [list](AP.md).
+
 
 ## Project Structure
 There are three main component in this project:
 
-* [UploadAndDetect](UploadAndDetect): A webapp for calling DeFiHap function.
-* [StaticAnalysis](StaticAnalysis): Check static antipatterns with HiveQL 
-AST and so on.
-* [DynamicAnalysis](DynamicAnalysis): Recommend Reduce number in JOIN operation
-and check if the operation is data skewing.
+* [UploadAndDetect](UploadAndDetect): A web interface for using DeFiHap.
+* [StaticAnalysis](StaticAnalysis): Check HiveQL statement and configuration anti-patterns with HiveQL AST and so on.
+* [DynamicAnalysis](DynamicAnalysis): Recommend the desired reducer settings for different join queries and check if there exists data skew.
 
 ## Install
 * Package two maven projects: [staticCheck](StaticAnalysis) and 
-[dynamicCheck](DynamicAnalysis/hivecheck), then deploy them.**Attention:** copy the [src](src) folder into your deploying path. 
-* Deploy python flask api [pred_api](DynamicAnalysis/MLP/ReducePredict/pred_api.py). **Note:** the model checkpoint is trained on our cluster for demostration, to support recommending number of reducers in your Hive cluster, you should replace [dataset](DynamicAnalysis/MLP/ReducePredict/all/) with your join logs and re-train the [MLP model](DynamicAnalysis/MLP/ReducePredict/HivePred.py).
-* Run [client webapp](UploadAndDetect/UploadAndDetect) (a VUE frontend project) to use DeFiHap. 
-Remember to set configuration in DeFiHap->Configuration->Set-Configuration first.
+[dynamicCheck](DynamicAnalysis/hivecheck), then deploy them. **Attention:** copy the [src](src) folder into your deploying path. 
+* Deploy python flask api [pred_api](DynamicAnalysis/MLP/ReducePredict/pred_api.py). **Attention:** the model checkpoint is trained on our cluster for demostration, to support recommending number of reducers in your Hive cluster, you should replace [dataset](DynamicAnalysis/MLP/ReducePredict/all/) with your join logs and re-train the [MLP model](DynamicAnalysis/MLP/ReducePredict/HivePred.py).
+* Run [client web interface](UploadAndDetect/UploadAndDetect) (a VUE frontend project) to use DeFiHap. Remember to set configuration in DeFiHap->Configurations->Set-Configuration first.
 
 ## Evaluation
- We evaluate DeFiHap on 110 real-world HiveQL statements collected non-duplicated HiveQL statements from StackOverflow. to quantify its capabilities in processing HiveQL APs.Three widely used metrics are selected: precision, recall, and F1.
-
- The dataset contains 14 different join queries for evaluating the technique of recommending reducer settings(the recommended number is considered correct if its corresponding execution time differs from the optimal one within 2 seconds). 
-
- We build Hive tables and load synthetic data for each statement in our cluster.The server of DeFiHap runs on Hive 2.3.4 with default configurations in a 3-node Hadoop cluster, and the Hive metadata is stored in MySQL.
-
+ We evaluate DeFiHap on 110 real-world HiveQL statements collected non-duplicated HiveQL statements from Stack Overflow. To quantify its capabilities in processing HiveQL APs, three widely used metrics are selected: precision, recall, and F1.
+ 
+ The dataset contains [96 statements](StaticAnalysis\src\main\java\myApplication\TestCase.java) for evaluating the technique of detecting and fixing HiveQL APs and [14 different join queries](DynamicAnalysis/MLP/ReducePredict/joinMlpTrainTest_L.csv) for evaluating the technique of recommending reducer settings. (The recommended number is considered correct if the difference between its corresponding execution time and the optimal one is less than 2 seconds.)
+ 
+ We build Hive tables and load synthetic data for each statement in our cluster. The server of DeFiHap runs on Hive 2.3.4 with default configurations in a 3-node Hadoop cluster, and the Hive metadata is stored in MySQL.
+ 
  Here are our evaluation results.
 
 | Function                        | Precision | Recall | F1     |
