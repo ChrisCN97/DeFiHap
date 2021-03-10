@@ -7,18 +7,14 @@ A tool for automatically detecting and fixing HiveQL anti-patterns. Application 
 The architecture of DeFiHap is shown in the figure. It consis ts of three components. 
 
 DeFiHap first implements a static analysis of AST, HiveQL data and  metadata to search for the latent statement and configuration anti-patterns.
-
 Then, for statement anti-patterns, DeFiHap suggests the fix through a template based rewriting technique. 
-
 And for configuration anti-patterns, DeFiHap employs a machine learning based approach to recommend the desired reducer settings for different join queries.
 
 You can try a demo version of DeFiHap on http://202.120.40.28:50012
 
 ## HiveQL Anti-Patterns
 We conduct an empirical study on the posts about HiveQL programming issues in Stack Overflow.
-
 38 HiveQL anti-patterns have been identified, which are categorized as statement and configuration anti-patterns.
-
 DeFiHap is able to detect 25 HiveQL anti-patterns and generates the fix suggestions for 17 of them, as shown in the [list](AP.md).
 
 
