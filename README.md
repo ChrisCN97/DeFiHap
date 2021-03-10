@@ -1,3 +1,8 @@
+<style>
+table {
+margin: auto;
+}
+</style>
 # DeFiHap
 A tool for automatically detecting and fixing HiveQL Anti-Patterns. Application developers can leverage DeFiHap to create efficient, maintainable and accurate queries in big data applications.
 
