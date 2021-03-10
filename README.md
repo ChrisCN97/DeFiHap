@@ -36,5 +36,5 @@ Remember to set configuration in DeFiHap->Configuration->Set-Configuration first
  We build Hive tables and load synthetic data for each statement in our cluster.The server of DeFiHap runs on Hive 2.3.4 with default configurations in a 3-node Hadoop cluster, and the Hive metadata is stored in MySQL.
  
  Here are our evaluation results.
-![system overview](pic/results.png)
+<div align=center> ![system overview](pic/results.png)
 
